@@ -41,6 +41,12 @@ TKB_document_name = ""
 TKB_exists = False
 
 def GLOBALS_init():
+    global AB_antal_brister_referenslänkar
+    global AB_antal_brister_revisionshistorik
+    global AB_detail_box_contents
+    global AB_document_exists
+    global AB_document_name
+    global AB_exists
     global docx_document
     global docx_IS_document
     global docx_TKB_document
@@ -67,6 +73,12 @@ def GLOBALS_init():
     global TKB_document_name
     global TKB_exists
 
+    AB_antal_brister_referenslänkar = 0
+    AB_antal_brister_revisionshistorik = 0
+    AB_detail_box_contents = ""
+    AB_document_exists = False
+    AB_document_name = ""
+    AB_exists = False
     docx_document = ""
     docx_IS_document = ""
     docx_TKB_document = ""

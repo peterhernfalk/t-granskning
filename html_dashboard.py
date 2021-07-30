@@ -11,10 +11,11 @@ def get_page_html():
     html += __html_recent_inspection_box_begin("Infospec-granskning") + globals.IS_detail_box_contents + __html_recent_inspection_box_end()
 
     html += __html_br()+__html_detail_box_begin_TKB()+globals.TKB_detail_box_contents+__box_content_end()
-    html += __html_section_end()+__html_br()+__html_br()+__html_body_end()+__html_end()
 
-    #html += __html_br()+__html_detail_box_begin_AB()+globals.AB_detail_box_contents+__box_content_end()
-    #html += __html_section_end()+__html_br()+__html_br()+__html_body_end()+__html_end()
+    html += __html_br()+__html_detail_box_begin_AB()+globals.AB_detail_box_contents+__box_content_end()
+
+    html += __html_section_end()+__html_br()+__html_br()
+    html += __html_body_end()+__html_end()
     return html
 
 def __html_start():
@@ -514,7 +515,17 @@ def __html_detail_box_begin_TKB():
     '''
     return html
 
-def __demo_add_box_content_IS():
+def __html_detail_box_begin_AB():
+    html = '''
+    <div id = "AB" class="detail-boxes">
+	<div class="recent-inspection box">
+    <div class="title">AB-granskning</div>
+    <div class="inspection-details">
+    <ul class="details">
+    '''
+    return html
+
+"""def __demo_add_box_content_IS():
     html = '''
       <li><b>Krav:</b> om dokumentegenskaper finns ska version och ändringsdatum stämma överens med granskad version</li>
       <br>
@@ -563,9 +574,9 @@ def __demo_add_box_content_IS():
       <li>&nbsp&nbsp 8.23 Ärenden </li>
       <li><b>Resultat: </b>för närvarande sker kontrollen manuellt, med ovanstående listning som underlag </li>
     '''
-    return html
+    return html"""
 
-def __demo_add_box_content_TKB():
+"""def __demo_add_box_content_TKB():
     html = '''
         <li><b>Krav:</b> om dokumentegenskaper finns ska version och ändringsdatum stämma överens med granskad version</li>
         <br>
@@ -576,7 +587,7 @@ def __demo_add_box_content_TKB():
         klassen Handelse.
         <br>Uppdaterat versionsnummer för ListCertificatesForCareWithQA till 3.3 eftersom den ska använda det nya Händelsefältet. \nUppdaterat tabell för kompatibilitet.', 'Peter Hernfalk', '')</li>
     '''
-    return html
+    return html"""
 
 def __box_content_end():
     html = '''

@@ -70,6 +70,7 @@ def reponse2request():
     globals.tag = tag
     alt_IS_name = request.args.get('is', default="")
     alt_TKB_name = request.args.get('tkb', default="")
+    alt_AB_name = request.args.get('ab', default="")
 
     if domain != "" and tag != "":
         if domain_prefix_param.strip() != "":
@@ -85,6 +86,9 @@ def reponse2request():
 
         globals.docx_document = globals.TKB
         __inspect_TKB_document(domain, tag, alt_TKB_name)
+
+        globals.docx_document = globals.AB
+        __inspect_AB_document(domain, tag, alt_AB_name)
 
         #html = __get_html_response(riv_domain, IS_page_link, TKB_page_link, IS_document_paragraphs, TKB_document_paragraphs)
         html = html_dashboard.get_page_html()
@@ -170,6 +174,37 @@ def __inspect_TKB_document(domain, tag, alt_document_name):
         ### dev test ###
         INFO_inspect_document(globals.TKB)
 
+
+def __inspect_AB_document(domain, tag, alt_document_name):
+    """
+    Beräknar url till AB-dokumentet för angiven domain och tag.
+
+    Laddar ner dokumentet till en virtuell fil som läses in i ett docx-Document.
+
+    Anropar därefter metoden "INFO_inspect_document" som genomför granskning av dokumentet.
+    """
+    global AB_page_link
+    global AB_document_paragraphs
+    AB_page_link = __get_document_page_link(domain, tag, globals.AB)
+    downloaded_AB_page = __get_downloaded_document(AB_page_link)
+
+    AB_document_paragraphs = ""
+
+    AB_head_hash = __get_head_hash(downloaded_AB_page)
+    AB_document_link = __get_document_link(domain, tag, globals.AB, AB_head_hash, alt_document_name)
+    downloaded_AB_document = __get_downloaded_document(AB_document_link)
+    if downloaded_AB_document.status_code == 404:
+        globals.TKB_exists = False
+    else:
+        globals.docx_AB_document = __get_docx_document(downloaded_AB_document)
+        globals.AB_document_exists = True
+        globals.AB_exists = True
+        ### dev test ###
+        for paragraph in globals.docx_AB_document.paragraphs:
+            if paragraph.text.strip() != "":
+                AB_document_paragraphs += paragraph.text + "<br>"
+        ### dev test ###
+        INFO_inspect_document(globals.AB)
 
 def __get_document_page_link(domainname, tag, document):
     """
