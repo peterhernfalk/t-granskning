@@ -5,12 +5,16 @@ from repo import *
 def get_page_html():
     html = __html_start() + __html_head() + __html_body_start() + __html_sidebar() + __html_overview_start(globals.domain_name, globals.tag)
     html += __html_summary_infospec() + __html_summary_TKB() + __html_section_end()
+    # + __html_summary_AB()
 
     html += __html_detail_section_begin("Infospec")
     html += __html_recent_inspection_box_begin("Infospec-granskning") + globals.IS_detail_box_contents + __html_recent_inspection_box_end()
 
     html += __html_br()+__html_detail_box_begin_TKB()+globals.TKB_detail_box_contents+__box_content_end()
     html += __html_section_end()+__html_br()+__html_br()+__html_body_end()+__html_end()
+
+    #html += __html_br()+__html_detail_box_begin_AB()+globals.AB_detail_box_contents+__box_content_end()
+    #html += __html_section_end()+__html_br()+__html_br()+__html_body_end()+__html_end()
     return html
 
 def __html_start():
@@ -30,7 +34,7 @@ def __html_head():
     html = '''
     <head>
     <meta charset="UTF-8">
-    <title> I-granskning </title>
+    <title> T-granskning </title>
     '''
     html += __html_style()
     html += '''
@@ -292,6 +296,12 @@ def __html_sidebar():
             <span class="links_name">TKB-granskning</span>
           </a>
         </li>
+        <li>
+          <a href="#AB">
+            <i></i>
+            <span class="links_name">AB-granskning</span>
+          </a>
+        </li>
         </div>
     '''
     return html
@@ -302,7 +312,7 @@ def __html_overview_start(domain_name, tag):
     <nav>
       <div class="sidebar-button">
         <i></i>
-        <span class="dashboard">I-granskning av: &nbsp '''
+        <span class="dashboard">T-granskning av: &nbsp '''
     html += domain_name + ' (' + tag + ')</span>'
     html += '''
     </div>
@@ -394,6 +404,11 @@ def __html_summary_TKB():
         html += __text_document_not_found(globals.TKB, globals.domain_name, globals.tag)
 
     html += '''
+        <br><div class="box-topic">Sammanfattning: AB</div>
+    '''
+    html += __get_AB_summary()
+
+    html += '''
     </div>
     </ul>
     </div>
@@ -409,6 +424,39 @@ def __get_TKB_summary():
     html += "<div><li><b>" + str(globals.TKB_antal_brister_referenslänkar) + " &nbsp</b>felaktiga länkar i referenstabellen</li></div>"
 
     return html
+
+
+def __html_summary_AB():
+    html = '''
+    <ul class="recent-result box">
+    <div>
+    <div class="box-topic">Sammanfattning: AB</div>
+    '''
+
+    html += __get_AB_summary()
+    """if globals.TKB_exists == True:
+        html += __get_TKB_summary()
+    else:
+        html += __text_document_not_found(globals.TKB, globals.domain_name, globals.tag)"""
+
+    html += '''
+    </div>
+    </ul>
+    </div>
+    '''
+    return html
+
+def __get_AB_summary():
+    html = ""
+    html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
+    """if globals.TKB_antal_brister_revisionshistorik == 0:
+        html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
+    else:
+        html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
+    html += "<div><li><b>" + str(globals.TKB_antal_brister_referenslänkar) + " &nbsp</b>felaktiga länkar i referenstabellen</li></div>"""""
+
+    return html
+
 
 def __html_section_end():
     html = "</section>"

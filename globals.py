@@ -8,6 +8,14 @@ granskningsresultat = ""
 HTML_2_SPACES = "&nbsp;&nbsp;"
 HTML_3_SPACES = "&nbsp;&nbsp;&nbsp;"
 
+AB = "AB"
+AB_antal_brister_referenslänkar = 0
+AB_antal_brister_revisionshistorik = 0
+AB_detail_box_contents = ""
+AB_document_exists = False
+AB_document_name = ""
+AB_exists = False
+
 IS = "IS"
 IS_antal_brister_datatyper = 0
 IS_antal_brister_klassbeskrivning = 0
