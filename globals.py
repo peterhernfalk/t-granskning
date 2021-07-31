@@ -16,6 +16,8 @@ AB_document_exists = False
 AB_document_name = ""
 AB_exists = False
 
+COMPATIBILITY_detail_box_contents = ""
+
 IS = "IS"
 IS_antal_brister_datatyper = 0
 IS_antal_brister_klassbeskrivning = 0
@@ -52,6 +54,7 @@ def GLOBALS_init():
     global AB_document_exists
     global AB_document_name
     global AB_exists
+    global COMPATIBILITY_detail_box_contents
     global docx_document
     global docx_IS_document
     global docx_TKB_document
@@ -86,6 +89,7 @@ def GLOBALS_init():
     AB_document_exists = False
     AB_document_name = ""
     AB_exists = False
+    COMPATIBILITY_detail_box_contents = ""
     docx_document = ""
     docx_IS_document = ""
     docx_TKB_document = ""

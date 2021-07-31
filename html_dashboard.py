@@ -2,25 +2,30 @@ import app
 import globals
 from repo import *
 
+
 def get_page_html():
     html = __html_start() + __html_head() + __html_body_start() + __html_sidebar() + __html_overview_start(globals.domain_name, globals.tag)
-    html += __html_summary_infospec() + __html_summary_TKB() + __html_section_end()
-    # + __html_summary_AB()
+    #html += __html_summary_infospec() + __html_summary_TKB() + __html_section_end()
+    #html += __html_summary_documents() + __html_summary_TKB() + __html_section_end()
+    html += __html_summary_documents() + __html_summary_SCHEMAS() + __html_section_end()
 
     html += __html_detail_section_begin("Infospec")
     html += __html_recent_inspection_box_begin("Infospec-granskning") + globals.IS_detail_box_contents + __html_recent_inspection_box_end()
 
-    html += __html_br()+__html_detail_box_begin_TKB()+globals.TKB_detail_box_contents+__box_content_end()
+    html += __html_br() + __html_detail_box_begin_TKB() + globals.TKB_detail_box_contents + __box_content_end()
 
-    html += __html_br()+__html_detail_box_begin_AB()+globals.AB_detail_box_contents+__box_content_end()
+    html += __html_br() + __html_detail_box_begin_AB() + globals.AB_detail_box_contents + __box_content_end()
 
-    html += __html_br()+__html_detail_box_begin_RIVTA()+globals.RIVTA_detail_box_contents+__box_content_end()
+    html += __html_br() + __html_detail_box_begin_RIVTA() + globals.RIVTA_detail_box_contents + __box_content_end()
 
-    html += __html_br()+__html_detail_box_begin_XML()+globals.XML_detail_box_contents+__box_content_end()
+    html += __html_br() + __html_detail_box_begin_XML() + globals.XML_detail_box_contents + __box_content_end()
 
-    html += __html_section_end()+__html_br()+__html_br()
-    html += __html_body_end()+__html_end()
+    html += __html_br() + __html_detail_box_begin_COMPATIBILITY() + globals.COMPATIBILITY_detail_box_contents + __box_content_end()
+
+    html += __html_section_end() + __html_br() + __html_br()
+    html += __html_body_end() + __html_end()
     return html
+
 
 def __html_start():
     html = '''
@@ -29,11 +34,13 @@ def __html_start():
     '''
     return html
 
+
 def __html_end():
     html = '''
     </html>
     '''
     return html
+
 
 def __html_head():
     html = '''
@@ -48,6 +55,7 @@ def __html_head():
     '''
     return html
 
+
 def __html_style():
     html = '''
     <style>
@@ -59,7 +67,7 @@ def __html_style():
       box-sizing: border-box;
       font-family: 'Poppins', sans-serif;
     }
-    
+
     .sidebar{
       position: fixed;
       height: 100%;
@@ -188,7 +196,7 @@ def __html_style():
       list-style: none;
       margin: 8px 0;
     }
-    
+
     /* Responsive Media Query */
     @media (max-width: 1240px) {
       .sidebar{
@@ -261,11 +269,13 @@ def __html_style():
     '''
     return html
 
+
 def __html_br():
     html = '''
     <br>
     '''
     return html
+
 
 def __html_body_start():
     html = '''
@@ -273,11 +283,13 @@ def __html_body_start():
     '''
     return html
 
+
 def __html_body_end():
     html = '''
     </body>
     '''
     return html
+
 
 def __html_sidebar():
     html = '''
@@ -319,9 +331,16 @@ def __html_sidebar():
             <span class="links_name">XML-validering</span>
           </a>
         </li>
+        <li>
+          <a href="#COMPATIBILITY">
+            <i></i>
+            <span class="links_name">Kompatibilitet</span>
+          </a>
+        </li>
         </div>
     '''
     return html
+
 
 def __html_overview_start(domain_name, tag):
     html = '''
@@ -336,6 +355,76 @@ def __html_overview_start(domain_name, tag):
     </nav>
     <div class="home-content">
     <div class="overview-boxes">
+    '''
+    return html
+
+
+def __html_summary_documents():
+    html = '''
+    <ul class="recent-result box">
+    <div>
+    <div class="box-topic">Sammanfattning: infospec</div>
+    '''
+    if globals.IS_exists == True:
+        html += '<div><li>' + __get_infospec_summary("revisionshistorik") + '</li></div>'
+        html += '<div><li>' + __get_infospec_summary("referenslänkar") + '</li></div>'
+        html += '<div><li>' + __get_infospec_summary("klassbeskrivning") + '</li></div>'
+        html += '<div><li>' + __get_infospec_summary("multiplicitet") + '</li></div>'
+        html += '<div><li>' + __get_infospec_summary("datatyper") + '</li></div>'
+        html += '<div><li>' + __get_infospec_summary("referensinfomodell") + '</li></div>'
+        html += '<div><li>' + __get_infospec_summary("tabellcellinnehåll") + '</li></div>'
+    else:
+        html += __text_document_not_found(globals.IS, globals.domain_name, globals.tag)
+
+
+    html += '''
+        <br><div class="box-topic">Sammanfattning: TKB</div>
+    '''
+    if globals.TKB_exists == True:
+        html += __get_TKB_summary()
+    else:
+        html += __text_document_not_found(globals.TKB, globals.domain_name, globals.tag)
+
+    html += '''
+        <br><div class="box-topic">Sammanfattning: AB</div>
+    '''
+
+    if globals.AB_exists == True:
+        html += __get_AB_summary()
+    else:
+        html += __text_document_not_found(globals.AB, globals.domain_name, globals.tag)
+
+
+    html += '''
+    </div>
+    </ul>
+    '''
+    return html
+
+
+def __html_summary_SCHEMAS():
+    html = '''
+    <ul class="recent-result box">
+    <div>
+    <div class="box-topic">Sammanfattning: RIVTA-verifiering</div>
+    '''
+    html += "<div><li>There were <b>0</b> errors and <b>0</b> warnings.</li></div>"
+
+
+    html += '''
+        <br><div class="box-topic">Sammanfattning: XML-validering</div>
+    '''
+    html += "<div><li><b>Valid</b> WSDL</li></div>"
+
+    html += '''
+        <br><div class="box-topic">Sammanfattning: versionskompatibilitet</div>
+    '''
+    html += "<div><li>Denna domänversion är <b>kompatibel</b> med förra domänversionen</li></div>"
+
+    html += '''
+    </div>
+    </ul>
+    </div>
     '''
     return html
 
@@ -354,8 +443,8 @@ def __html_summary_infospec():
         html += '<div><li>' + __get_infospec_summary("referensinfomodell") + '</li></div>'
         html += '<div><li>' + __get_infospec_summary("tabellcellinnehåll") + '</li></div>'
     else:
-        #html = globals.IS_felmeddelande
-        #html += "<br><i><b>Infospec saknas.</b> <br>Här ska det kompletteras med information som kan underlätta för granskaren.</i>"
+        # html = globals.IS_felmeddelande
+        # html += "<br><i><b>Infospec saknas.</b> <br>Här ska det kompletteras med information som kan underlätta för granskaren.</i>"
         html += __text_document_not_found(globals.IS, globals.domain_name, globals.tag)
     html += '''
     </div>
@@ -363,8 +452,8 @@ def __html_summary_infospec():
     '''
     return html
 
-def __text_document_not_found(doc, domain, tag):
 
+def __text_document_not_found(doc, domain, tag):
     """
     Sammanställer ett meddelande till användaren då sökt dokument saknas eller då fel dokumentnamn har angivits.
 
@@ -375,13 +464,14 @@ def __text_document_not_found(doc, domain, tag):
         document_name = globals.TKB
 
     document_info = globals.HTML_2_SPACES
-    document_info += document_name + " saknas eller har annat namn än det förväntade: <i><br>" + globals.HTML_2_SPACES+globals.HTML_2_SPACES + doc.upper() + "_" + domain.replace(".", "_") + ".docx</i>"
+    document_info += document_name + " saknas eller har annat namn än det förväntade: <i><br>" + globals.HTML_2_SPACES + globals.HTML_2_SPACES + doc.upper() + "_" + domain.replace(
+        ".", "_") + ".docx</i>"
     docs_link = REPO_get_domain_docs_link(domain, tag)
     document_info += "<br><br>" + globals.HTML_2_SPACES + "Kontrollera dokumentnamn här: <a href='" + docs_link + "'" + " target='_blank'>" + docs_link + "</a>"
     document_info += "<br><br>" + globals.HTML_2_SPACES + "Om det finns en " + document_name + " så har den ett annat än det förväntade namnet. "
     if doc == globals.IS:
         document_info += "<br>" + globals.HTML_2_SPACES + "I så fall kan du ange det namnet som en url-parameter enligt: <br>" + globals.HTML_2_SPACES + globals.HTML_2_SPACES + "<i>url...</i><b>&is=dokumentnamn</b>"
-        document_info += "<br>" + globals.HTML_2_SPACES + "Om detta är en applikationsspecifik domän kan du ange det i en url-parameter: <br>" + globals.HTML_2_SPACES+globals.HTML_2_SPACES + "<i>url...</i><b>&domainprefix=true</b>"
+        document_info += "<br>" + globals.HTML_2_SPACES + "Om detta är en applikationsspecifik domän kan du ange det i en url-parameter: <br>" + globals.HTML_2_SPACES + globals.HTML_2_SPACES + "<i>url...</i><b>&domainprefix=true</b>"
 
     return document_info
 
@@ -398,14 +488,17 @@ def __get_infospec_summary(topic):
     elif topic == "klassbeskrivning":
         html += "<b>" + str(globals.IS_antal_brister_klassbeskrivning) + " &nbsp</b>saknade klassbeskrivningar"
     elif topic == "multiplicitet":
-        html += "<b>" + str(globals.IS_antal_brister_multiplicitet) + " &nbsp</b>saknade multipliciteter i klasstabeller"
+        html += "<b>" + str(
+            globals.IS_antal_brister_multiplicitet) + " &nbsp</b>saknade multipliciteter i klasstabeller"
     elif topic == "datatyper":
         html += "<b>" + str(globals.IS_antal_brister_datatyper) + " &nbsp</b>odefinierade datatyper"
     elif topic == "referensinfomodell":
-        html += "<b>" + str(globals.IS_antal_brister_referensinfomodell) + " &nbsp</b>saknade referenser till RIM i klasstabeller"
+        html += "<b>" + str(
+            globals.IS_antal_brister_referensinfomodell) + " &nbsp</b>saknade referenser till RIM i klasstabeller"
     elif topic == "tabellcellinnehåll":
         html += "<b>" + str(globals.IS_antal_brister_tomma_tabellceller) + " &nbsp</b>tomma celler i klasstabeller"
     return html
+
 
 def __html_summary_TKB():
     html = '''
@@ -414,7 +507,7 @@ def __html_summary_TKB():
     <div class="box-topic">Sammanfattning: TKB</div>
     '''
 
-    #html += "<div><li>" + __get_TKB_summary() + "</li></div>"
+    # html += "<div><li>" + __get_TKB_summary() + "</li></div>"
     if globals.TKB_exists == True:
         html += __get_TKB_summary()
     else:
@@ -432,13 +525,15 @@ def __html_summary_TKB():
     '''
     return html
 
+
 def __get_TKB_summary():
     html = ""
     if globals.TKB_antal_brister_revisionshistorik == 0:
         html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
     else:
         html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
-    html += "<div><li><b>" + str(globals.TKB_antal_brister_referenslänkar) + " &nbsp</b>felaktiga länkar i referenstabellen</li></div>"
+    html += "<div><li><b>" + str(
+        globals.TKB_antal_brister_referenslänkar) + " &nbsp</b>felaktiga länkar i referenstabellen</li></div>"
 
     return html
 
@@ -463,6 +558,7 @@ def __html_summary_AB():
     '''
     return html
 
+
 def __get_AB_summary():
     html = ""
     html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
@@ -479,10 +575,11 @@ def __html_section_end():
     html = "</section>"
     return html
 
+
 def __html_detail_section_begin(id):
     if id.strip() != "":
         html = '''
-        <section id="'''+id+'''" class="home-section">
+        <section id="''' + id + '''" class="home-section">
         <div class="home-content">
           <div class="detail-boxes">
         '''
@@ -494,23 +591,26 @@ def __html_detail_section_begin(id):
         '''
     return html
 
+
 def __html_section_end():
     html = '''
     </section>
     '''
     return html
 
+
 def __html_recent_inspection_box_begin(title):
     html = ""
     if title.strip() != "":
         html = '''
         <div class="recent-inspection box">
-        <div class="title">'''+title+'''</div>
+        <div class="title">''' + title + '''</div>
         <div class="inspection-details">
         <ul class="details">
         <li class="topic">
         '''
     return html
+
 
 def __html_recent_inspection_box_end():
     html = '''
@@ -520,6 +620,7 @@ def __html_recent_inspection_box_end():
     </div>
     '''
     return html
+
 
 def __html_detail_box_begin_TKB():
     html = '''
@@ -531,6 +632,7 @@ def __html_detail_box_begin_TKB():
     '''
     return html
 
+
 def __html_detail_box_begin_AB():
     html = '''
     <div id = "AB" class="detail-boxes">
@@ -540,6 +642,7 @@ def __html_detail_box_begin_AB():
     <ul class="details">
     '''
     return html
+
 
 def __html_detail_box_begin_RIVTA():
     html = '''
@@ -551,6 +654,7 @@ def __html_detail_box_begin_RIVTA():
     '''
     return html
 
+
 def __html_detail_box_begin_XML():
     html = '''
     <div id = "XML" class="detail-boxes">
@@ -560,6 +664,17 @@ def __html_detail_box_begin_XML():
     <ul class="details">
     '''
     return html
+
+def __html_detail_box_begin_COMPATIBILITY():
+    html = '''
+    <div id = "COMPATIBILITY" class="detail-boxes">
+	<div class="recent-inspection box">
+    <div class="title">Versionskompatibilitet</div>
+    <div class="inspection-details">
+    <ul class="details">
+    '''
+    return html
+
 
 """def __demo_add_box_content_IS():
     html = '''
@@ -625,6 +740,7 @@ def __html_detail_box_begin_XML():
     '''
     return html"""
 
+
 def __box_content_end():
     html = '''
     </ul>
@@ -632,5 +748,3 @@ def __box_content_end():
     </div>
     '''
     return html
-
-get_page_html()
