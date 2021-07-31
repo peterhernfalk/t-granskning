@@ -30,6 +30,8 @@ IS_document_exists = False
 IS_document_name = ""
 IS_exists = False
 
+RIVTA_detail_box_contents = ""
+
 tag = ""
 
 TKB = "TKB"
@@ -39,6 +41,9 @@ TKB_detail_box_contents = ""
 TKB_document_exists = False
 TKB_document_name = ""
 TKB_exists = False
+
+XML_detail_box_contents = ""
+
 
 def GLOBALS_init():
     global AB_antal_brister_referenslänkar
@@ -65,6 +70,7 @@ def GLOBALS_init():
     global IS_document_exists
     global IS_document_name
     global IS_exists
+    global RIVTA_detail_box_contents
     global tag
     global TKB_antal_brister_referenslänkar
     global TKB_antal_brister_revisionshistorik
@@ -72,6 +78,7 @@ def GLOBALS_init():
     global TKB_document_exists
     global TKB_document_name
     global TKB_exists
+    global XML_detail_box_contents
 
     AB_antal_brister_referenslänkar = 0
     AB_antal_brister_revisionshistorik = 0
@@ -97,6 +104,7 @@ def GLOBALS_init():
     IS_document_exists = False
     IS_document_name = ""
     IS_exists = False
+    RIVTA_detail_box_contents = ""
     tag = ""
     TKB_antal_brister_referenslänkar = 0
     TKB_antal_brister_revisionshistorik = 0
@@ -104,5 +112,6 @@ def GLOBALS_init():
     TKB_document_exists = False
     TKB_document_name = ""
     TKB_exists = False
+    XML_detail_box_contents = ""
 
 

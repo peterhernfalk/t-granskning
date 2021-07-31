@@ -14,6 +14,10 @@ def get_page_html():
 
     html += __html_br()+__html_detail_box_begin_AB()+globals.AB_detail_box_contents+__box_content_end()
 
+    html += __html_br()+__html_detail_box_begin_RIVTA()+globals.RIVTA_detail_box_contents+__box_content_end()
+
+    html += __html_br()+__html_detail_box_begin_XML()+globals.XML_detail_box_contents+__box_content_end()
+
     html += __html_section_end()+__html_br()+__html_br()
     html += __html_body_end()+__html_end()
     return html
@@ -303,6 +307,18 @@ def __html_sidebar():
             <span class="links_name">AB-granskning</span>
           </a>
         </li>
+        <li>
+          <a href="#RIVTA">
+            <i></i>
+            <span class="links_name">RIVTA-verifiering</span>
+          </a>
+        </li>
+        <li>
+          <a href="#XML">
+            <i></i>
+            <span class="links_name">XML-validering</span>
+          </a>
+        </li>
         </div>
     '''
     return html
@@ -520,6 +536,26 @@ def __html_detail_box_begin_AB():
     <div id = "AB" class="detail-boxes">
 	<div class="recent-inspection box">
     <div class="title">AB-granskning</div>
+    <div class="inspection-details">
+    <ul class="details">
+    '''
+    return html
+
+def __html_detail_box_begin_RIVTA():
+    html = '''
+    <div id = "RIVTA" class="detail-boxes">
+	<div class="recent-inspection box">
+    <div class="title">RIVTA-verifiering</div>
+    <div class="inspection-details">
+    <ul class="details">
+    '''
+    return html
+
+def __html_detail_box_begin_XML():
+    html = '''
+    <div id = "XML" class="detail-boxes">
+	<div class="recent-inspection box">
+    <div class="title">XML-validering</div>
     <div class="inspection-details">
     <ul class="details">
     '''
