@@ -286,9 +286,7 @@ def __get_head_hash(document_page):
     hash_start = document_page.text.find('{"hash":')
     hash_end = hash_start+17
     head_hash = document_page.text[hash_start+10:hash_end]
-
-    if globals.REPOINFO_detail_box_contents == "":
-        globals.REPOINFO_detail_box_contents += "<br>Commit-id: " + head_hash
+    globals.head_hash = head_hash
 
     return head_hash
 

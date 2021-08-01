@@ -23,6 +23,8 @@ def get_page_html():
 
     html += __html_br() + __html_detail_box_begin_COMPATIBILITY() + globals.COMPATIBILITY_detail_box_contents + __box_content_end()
 
+    if globals.REPOINFO_detail_box_contents == "":
+        globals.REPOINFO_detail_box_contents += "<br>Commit-id: " + globals.head_hash
     repo.REPO_get_domain_docs_link(globals.domain_name,globals.tag)
     html += __html_br() + __html_detail_box_begin_REPOINFO() + globals.REPOINFO_detail_box_contents + __box_content_end()
 
