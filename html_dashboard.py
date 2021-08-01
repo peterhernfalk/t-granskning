@@ -101,13 +101,15 @@ def __html_style():
       transition: all 0.4s ease;
     }
     .sidebar .nav-links li a.active{
-      background: #081D45;
+      //background: #081D45;
+      background: #505050;
     }
     .sidebar .nav-links li a:hover{
       background: #081D45;
     }
     .sidebar .nav-links li i{
-      min-width: 60px;
+      //min-width: 60px;
+      padding-left: 20px;
       text-align: center;
       font-size: 18px;
       color: #fff;
