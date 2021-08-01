@@ -1,5 +1,6 @@
 import app
 import globals
+import repo
 from repo import *
 
 
@@ -21,6 +22,9 @@ def get_page_html():
     html += __html_br() + __html_detail_box_begin_XML() + globals.XML_detail_box_contents + __box_content_end()
 
     html += __html_br() + __html_detail_box_begin_COMPATIBILITY() + globals.COMPATIBILITY_detail_box_contents + __box_content_end()
+
+    repo.REPO_get_domain_docs_link(globals.domain_name,globals.tag)
+    html += __html_br() + __html_detail_box_begin_REPOINFO() + globals.REPOINFO_detail_box_contents + __box_content_end()
 
     html += __html_section_end() + __html_br() + __html_br()
     html += __html_body_end() + __html_end()
@@ -335,6 +339,12 @@ def __html_sidebar():
           <a href="#COMPATIBILITY">
             <i></i>
             <span class="links_name">Kompatibilitet</span>
+          </a>
+        </li>
+        <li>
+          <a href="#REPOINFO">
+            <i></i>
+            <span class="links_name">Repo-information</span>
           </a>
         </li>
         </div>
@@ -670,6 +680,17 @@ def __html_detail_box_begin_COMPATIBILITY():
     <div id = "COMPATIBILITY" class="detail-boxes">
 	<div class="recent-inspection box">
     <div class="title">Versionskompatibilitet</div>
+    <div class="inspection-details">
+    <ul class="details">
+    '''
+    return html
+
+
+def __html_detail_box_begin_REPOINFO():
+    html = '''
+    <div id = "REPOINFO" class="detail-boxes">
+	<div class="recent-inspection box">
+    <div class="title">Repo-information</div>
     <div class="inspection-details">
     <ul class="details">
     '''

@@ -14,4 +14,7 @@ def REPO_get_domain_docs_link(domainname, tag):
     url_docs = "docs/"
     document_page_link = url_prefix+url_domain+url_src+url_tag+url_docs
 
+
+    globals.REPOINFO_detail_box_contents += "<br>Länk till domänens Bitbucket-repo: <a href='" + url_prefix+url_domain+url_src+url_tag + "'" + " target='_blank'>" + url_prefix+url_domain+url_src+url_tag + "</a>"
+
     return document_page_link
