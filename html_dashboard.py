@@ -11,9 +11,9 @@ def get_page_html():
     html += __html_summary_documents() + __html_summary_SCHEMAS() + __html_section_end()
 
     html += __html_detail_section_begin("Infospec")
-    html += __html_recent_inspection_box_begin("Infospec-granskning") + globals.IS_detail_box_contents + __html_recent_inspection_box_end()
+    #html += __html_recent_inspection_box_begin("Infospec-granskning") + globals.IS_detail_box_contents + __html_recent_inspection_box_end()
 
-    html += __html_br() + __html_detail_box_begin_TKB() + globals.TKB_detail_box_contents + __box_content_end()
+    html += __html_detail_box_begin_TKB() + globals.TKB_detail_box_contents + __box_content_end()
 
     html += __html_br() + __html_detail_box_begin_AB() + globals.AB_detail_box_contents + __box_content_end()
 
@@ -309,12 +309,12 @@ def __html_sidebar():
             <span class="links_name"><b>Innehåll</b></span>
           </a>
         </li>
-        <li>
+        <!--li>
           <a href="#Infospec">
             <i></i>
             <span class="links_name">Infospec-granskning</span>
           </a>
-        </li>
+        </li-->
         <li>
           <a href="#TKB">
             <i></i>
@@ -377,9 +377,9 @@ def __html_summary_documents():
     html = '''
     <ul class="recent-result box">
     <div>
-    <div class="box-topic">Sammanfattning: infospec</div>
+    <!--div class="box-topic">Sammanfattning: infospec</div-->
     '''
-    if globals.IS_exists == True:
+    """if globals.IS_exists == True:
         html += '<div><li>' + __get_infospec_summary("revisionshistorik") + '</li></div>'
         html += '<div><li>' + __get_infospec_summary("referenslänkar") + '</li></div>'
         html += '<div><li>' + __get_infospec_summary("klassbeskrivning") + '</li></div>'
@@ -388,11 +388,11 @@ def __html_summary_documents():
         html += '<div><li>' + __get_infospec_summary("referensinfomodell") + '</li></div>'
         html += '<div><li>' + __get_infospec_summary("tabellcellinnehåll") + '</li></div>'
     else:
-        html += __text_document_not_found(globals.IS, globals.domain_name, globals.tag)
+        html += __text_document_not_found(globals.IS, globals.domain_name, globals.tag)"""
 
 
     html += '''
-        <br><div class="box-topic">Sammanfattning: TKB</div>
+        <div class="box-topic">Sammanfattning: TKB</div>
     '''
     if globals.TKB_exists == True:
         html += __get_TKB_summary()
