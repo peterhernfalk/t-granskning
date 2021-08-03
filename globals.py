@@ -6,6 +6,7 @@ AB_detail_box_contents = ""
 AB_document_exists = False
 AB_document_name = ""
 AB_exists = False
+COMMENTS_detail_box_contents = ""
 COMPATIBILITY_detail_box_contents = ""
 docx_document = ""
 docx_IS_document = ""
@@ -49,6 +50,7 @@ def GLOBALS_init():
     global AB_document_exists
     global AB_document_name
     global AB_exists
+    global COMMENTS_detail_box_contents
     global COMPATIBILITY_detail_box_contents
     global docx_document
     global docx_IS_document
@@ -86,6 +88,7 @@ def GLOBALS_init():
     AB_document_exists = False
     AB_document_name = ""
     AB_exists = False
+    COMMENTS_detail_box_contents = ""
     COMPATIBILITY_detail_box_contents = ""
     docx_document = ""
     docx_IS_document = ""

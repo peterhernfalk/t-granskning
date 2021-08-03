@@ -28,6 +28,9 @@ def get_page_html():
     repo.REPO_get_domain_docs_link(globals.domain_name,globals.tag)
     html += __html_br() + __html_detail_box_begin_REPOINFO() + globals.REPOINFO_detail_box_contents + __box_content_end()
 
+    globals.COMMENTS_detail_box_contents = "Här ska förslag till granskningskommentarer visas, inklusive färgkodning och i samma struktur som granskningsrapporten"
+    html += __html_br() + __html_detail_box_begin_COMMENTS() + globals.COMMENTS_detail_box_contents + __box_content_end()
+
     html += __html_section_end() + __html_br() + __html_br()
     html += __html_body_end() + __html_end()
     return html
@@ -349,6 +352,12 @@ def __html_sidebar():
           <a href="#REPOINFO">
             <i></i>
             <span class="links_name">Repo-information</span>
+          </a>
+        </li>
+        <li>
+          <a href="#Comments">
+            <i></i>
+            <span class="links_name">Granskningskommentarer</span>
           </a>
         </li>
         </div>
@@ -695,6 +704,16 @@ def __html_detail_box_begin_REPOINFO():
     <div id = "REPOINFO" class="detail-boxes">
 	<div class="recent-inspection box">
     <div class="title">Repo-information</div>
+    <div class="inspection-details">
+    <ul class="details">
+    '''
+    return html
+
+def __html_detail_box_begin_COMMENTS():
+    html = '''
+    <div id = "Comments" class="detail-boxes">
+	<div class="recent-inspection box">
+    <div class="title">Förslag till granskningskommentarer</div>
     <div class="inspection-details">
     <ul class="details">
     '''
