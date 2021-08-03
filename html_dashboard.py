@@ -445,6 +445,11 @@ def __html_summary_SCHEMAS():
     html += "<div><li>Denna domänversion är <b>kompatibel</b> med förra domänversionen</li></div>"
 
     html += '''
+        <br><div class="box-topic">Sammanfattning: granskningskommentarer</div>
+        <div><li><b>0  &nbsp</b>förslag till granskningskommentarer</div></li>
+    '''
+
+    html += '''
     </div>
     </ul>
     </div>
