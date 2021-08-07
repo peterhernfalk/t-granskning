@@ -35,6 +35,19 @@ def __execute_command(command):
     if globals.TKB_exists == False:
         write_output("Saknad obligatorisk fil: docs/TKB_*.docx")"""
 
+def __inspect_AB():
+    write_detail_box_content("<b>Krav:</b> alla AB ska ha minst två alternativ och motivering till det valda alternativet. Kontrolleras manuellt")
+    write_detail_box_content("<b>Krav:</b> om dokumentegenskaper finns ska version och ändringsdatum stämma överens med granskad version")
+    write_detail_box_html("<br>")
+    #globals.document_path = globals.domain_folder_name+"/docs/"
+    DOCX_prepare_inspection("AB_*.doc*")
+    write_detail_box_content("<b>Krav:</b> revisionshistoriken ska vara uppdaterad för samma version som domänen")
+    write_detail_box_content("<b>Granskningsstöd:</b> om revisionshistoriken inte är uppdaterad, kontakta beställaren eller skriv en granskningskommentar")
+    DOCX_inspect_revision_history()
+    write_detail_box_html("<br>")
+    write_detail_box_content("<b>Krav:</b> dokumentet ska innehålla rimliga arkitekturbeslut")
+    DOCX_display_paragraph_text_and_tables("arkitekturella beslut",TITLE,NO_INITIAL_NEWLINE,NO_TEXT,NO_TABLES)
+
 def __inspect_IS():
     write_detail_box_content("<b>Krav:</b> om dokumentegenskaper finns ska version och ändringsdatum stämma överens med granskad version")
     DOCX_prepare_inspection("IS_*.doc*")
@@ -110,6 +123,9 @@ def INFO_inspect_document(doc):
         __inspect_IS()
     elif doc == globals.TKB:
         __inspect_TKB()
+    elif doc == globals.AB:
+        __inspect_AB()
+
 
 ############################## TEST ##############################
 if local_test == True:

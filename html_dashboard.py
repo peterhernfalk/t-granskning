@@ -589,12 +589,16 @@ def __html_summary_AB():
 
 def __get_AB_summary():
     html = ""
-    html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
-    """if globals.TKB_antal_brister_revisionshistorik == 0:
+    #html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
+    if globals.AB_antal_brister_revisionshistorik == 0:
         html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
     else:
         html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
-    html += "<div><li><b>" + str(globals.TKB_antal_brister_referenslänkar) + " &nbsp</b>felaktiga länkar i referenstabellen</li></div>"""""
+
+    if globals.AB_antal_arkitekturbeslut > 0:
+        html += "<div><li>Arkitekturbeslut <b>finns</b></li></div>"
+    else:
+        html += "<div><li>Arkitekturbeslut <b>saknas</b></li></div>"
 
     return html
 

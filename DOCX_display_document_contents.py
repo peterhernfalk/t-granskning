@@ -20,7 +20,9 @@ local_test = False
 
 
 def __style_family(document_search_phrase):
-    if "IS_*" in document_search_phrase:
+    if "AB_*" in document_search_phrase:
+        return STYLE_FAMILY_RUBRIK
+    elif "IS_*" in document_search_phrase:
         return STYLE_FAMILY_RUBRIK
     else:
         return STYLE_FAMILY_HEADING
@@ -44,20 +46,19 @@ def DOCX_inspect_revision_history():
         table = document.tables[2]
 
     for i, row in enumerate(table.rows):
-        text = tuple(cell.text for cell in row.cells)
+        text = tuple(cell.text+" " for cell in row.cells)
 
     if str(table.cell(i, 0).text) != globals.tag:
-        write_output("OBS! Revisionshistoriken behöver uppdateras. (hittade: "+str(table.cell(i, 0).text)+" men förväntade: "+globals.tag+")")
         write_detail_box_content("<b>Resultat:</b> Revisionshistoriken behöver uppdateras. (hittade: "+str(table.cell(i, 0).text)+" men förväntade: "+globals.tag+")")
         if globals.docx_document == globals.IS:
             globals.IS_antal_brister_revisionshistorik = 1
         elif globals.docx_document == globals.TKB:
             globals.TKB_antal_brister_revisionshistorik = 1
+        elif globals.docx_document == globals.AB:
+            globals.AB_antal_brister_revisionshistorik = 1
     else:
-        write_output("Revisionshistoriken är uppdaterad för denna version av domänen")
         write_detail_box_content("<b>Resultat:</b> Revisionshistoriken är uppdaterad för denna version av domänen")
-    write_output("Revisionshistorikens sista rad: " + str(text))
-    write_detail_box_content("Revisionshistorikens sista rad: " + str(text))
+    write_detail_box_content("Revisionshistorikens sista rad: " + ''.join(text).replace("\n","<br>"))
 
 def DOCX_display_paragraph_text_and_tables(searched_paragraph_title, display_paragraph_title, display_initial_newline, display_keylevel_text, display_tables):
     """
@@ -87,7 +88,7 @@ def DOCX_display_paragraph_text_and_tables(searched_paragraph_title, display_par
                 if searched_paragraph_found == True:
                     if display_tables == True:
                         if display_paragraph_title == False:
-                            write_output("<br>")
+                            #write_output("<br>")
                             write_detail_box_html("<br>")
                         __table_print(block)
                     searched_paragraph_found = False     # Bug: supports only one table per paragraph
@@ -154,6 +155,8 @@ def __set_document_name(search_phrase):
         document = globals.docx_IS_document
     elif "TKB_*" in search_phrase:
         document = globals.docx_TKB_document
+    elif "AB_*" in search_phrase:
+        document = globals.docx_AB_document
 
 
 def __document_structure_2_dict(style_family):
@@ -219,6 +222,8 @@ def __display_paragraph_text_by_paragraph_level(searched_paragraph_level,display
     """
     Hämtar paragraftext från dokumentstruktur-dictionaryt med rubriknivå som nyckel, och visar den funna texten
     """
+    #if globals.docx_document == globals.AB:
+    #    print("__display_paragraph_text_by_paragraph_level:",searched_paragraph_level,display_keylevel_text)
     previous_key = ""
     for key, value in document_paragraph_index_dict.items():
         if key[0:len(searched_paragraph_level)] == searched_paragraph_level:
@@ -229,10 +234,14 @@ def __display_paragraph_text_by_paragraph_level(searched_paragraph_level,display
                     if display_keylevel_text == True:
                         write_output(globals.HTML_3_SPACES + key.strip()[key_level_length+1:])
                         write_detail_box_content(globals.HTML_3_SPACES + key.strip()[key_level_length+1:])
+                        if globals.docx_document == globals.AB:
+                            globals.AB_antal_arkitekturbeslut += 1
                 else:
                     key = key.replace("\n"," ")
                     write_output(globals.HTML_3_SPACES + key)
                     write_detail_box_content(globals.HTML_3_SPACES + key)
+                    if globals.docx_document == globals.AB:
+                        globals.AB_antal_arkitekturbeslut += 1
                 previous_key = key.strip()[0:key_level_length]
 
 def DOCX_display_paragraph_text_by_paragraph_level(searched_paragraph_level,display_keylevel_text):
@@ -290,17 +299,13 @@ def remove_hyperlink_tags(xml):
 #####################
 
 def __table_print(table):
-    #table = block
     for row in table.rows:
         for cell in row.cells:
             for paragraph in cell.paragraphs:
                 output_text = paragraph.text
-                #print("paragraph",paragraph.style)
-                #output_text = remove_hyperlink_tags(paragraph.text)
                 write_output_without_newline(globals.HTML_3_SPACES + output_text)
                 write_detail_box_html(globals.HTML_3_SPACES + output_text)
-        #write_output_without_newline("\t" + output_text)
-        write_output("")
+        #write_output("")
         write_detail_box_html("<br>")
 
 def __iter_block_items(parent,searched_paragraph_level):

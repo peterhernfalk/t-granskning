@@ -1,6 +1,6 @@
 
 AB = "AB"
-AB_antal_brister_referenslänkar = 0
+AB_antal_arkitekturbeslut = 0
 AB_antal_brister_revisionshistorik = 0
 AB_detail_box_contents = ""
 AB_document_exists = False
@@ -44,7 +44,7 @@ XML_detail_box_contents = ""
 
 
 def GLOBALS_init():
-    global AB_antal_brister_referenslänkar
+    global AB_antal_arkitekturbeslut
     global AB_antal_brister_revisionshistorik
     global AB_detail_box_contents
     global AB_document_exists
@@ -82,7 +82,7 @@ def GLOBALS_init():
     global TKB_exists
     global XML_detail_box_contents
 
-    AB_antal_brister_referenslänkar = 0
+    AB_antal_arkitekturbeslut = 0
     AB_antal_brister_revisionshistorik = 0
     AB_detail_box_contents = ""
     AB_document_exists = False

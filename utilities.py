@@ -48,6 +48,9 @@ def extract_urls_from_table(document, table_number):
 def write_output(text):
     #print(text)
     globals.granskningsresultat += "<br>" + text
+    #if globals.docx_document == globals.AB:
+    #    print("write_output:", text)
+
     """if globals.output_channel == globals.CONSOLE:
         print(text)
     elif globals.output_channel == globals.CONSOLE_AND_TEXTFILE:
@@ -63,22 +66,31 @@ def write_output(text):
         print(text)"""
 
 def write_detail_box_content(text):
+    #formatted_text = ''.join(text).replace("\n","<br>")
     detail_box_content = "<li>" + text + "</li>"
     if globals.docx_document == globals.IS:
         globals.IS_detail_box_contents += detail_box_content
     elif globals.docx_document == globals.TKB:
         globals.TKB_detail_box_contents += detail_box_content
+    elif globals.docx_document == globals.AB:
+        globals.AB_detail_box_contents += detail_box_content
 
 def write_detail_box_html(html_text):
+    formatted_text = html_text.replace("\n","<br>")
+    detail_box_content = "<li>" + formatted_text + "</li>"
     if globals.docx_document == globals.IS:
-        globals.IS_detail_box_contents += html_text
+        globals.IS_detail_box_contents += formatted_text
     elif globals.docx_document == globals.TKB:
-        globals.TKB_detail_box_contents += html_text
+        globals.TKB_detail_box_contents += formatted_text
+    elif globals.docx_document == globals.AB:
+        globals.AB_detail_box_contents += formatted_text
 
 
 def write_output_without_newline(text):
+    formatted_text = text.replace("\n","<br>")
+    #print(globals.docx_document,"formatted_text:",formatted_text)
     #print(text, "\t", end="")
-    globals.granskningsresultat += text
+    globals.granskningsresultat += formatted_text
     #if globals.output_channel == globals.CONSOLE:
     #    print(text,"\t",end="")
 
