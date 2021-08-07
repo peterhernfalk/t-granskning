@@ -598,7 +598,7 @@ def __get_AB_summary():
     if globals.AB_antal_arkitekturbeslut > 1:
         html += "<div><li>Arkitekturbeslut <b>finns</b></li></div>"
     else:
-        html += "<div><li>Arkitekturbeslut behöver <b>kollas</b> (saknas eller har fel format)</li></div>"
+        html += "<div><li>Arkitekturbeslut <b>behöver kollas</b> (saknas eller har fel format)</li></div>"
 
     return html
 
