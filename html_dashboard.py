@@ -595,7 +595,7 @@ def __get_AB_summary():
     else:
         html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
 
-    if globals.AB_antal_arkitekturbeslut > 0:
+    if globals.AB_antal_arkitekturbeslut > 1:
         html += "<div><li>Arkitekturbeslut <b>finns</b></li></div>"
     else:
         html += "<div><li>Arkitekturbeslut <b>saknas</b></li></div>"
