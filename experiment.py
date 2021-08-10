@@ -46,28 +46,56 @@ def __test_download_from_Bitbucket():
         #Relative links to schema files (wsdl and xsd) can be found with search expression: "path
 
     #document_link = "https://bitbucket.org/rivta-domains/riv.clinicalprocess.activity.request/src/1.0.2/docs/TKB_clinicalprocess_activity_request.docx"
+    print()
     downloaded_requests_get = requests.get(document_link, stream=True)
-    print(type(downloaded_requests_get))
-    print(type(downloaded_requests_get.text))
-    print(type(downloaded_requests_get.content))
+    dict_containing_json = json.loads(downloaded_requests_get.content)
+    json_dumps_dict = json.dumps(dict_containing_json['values'], indent=1)
+    rsplit_json_dumps_dict = json_dumps_dict.rsplit("\n")
+    code_gen_files = []
+    docs_files = []
+    core_components_files = []
+    interactions_files = []
+    test_suite_files = []
+    for line in rsplit_json_dumps_dict:
+        if line.find('"path') > 0:
+            if line.find("pom") > 0 or line.find(".bat") > 0:
+                code_gen_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+            elif line.find(".docx") > 0:
+                docs_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+            elif line.find("core_components") > 0:
+                if line.find(".xsd") > 0 or line.find(".wsdl") > 0:
+                    core_components_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+            elif line.find("interactions") > 0:
+                if line.find(".xsd") > 0 or line.find(".wsdl") > 0:
+                    interactions_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+            elif line.find("test-suite") > 0 and line.find(".") > 0:
+                test_suite_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+
+    for file in code_gen_files:
+        print(file)
+    print()
+    for file in docs_files:
+        print(file)
+    print()
+    for file in core_components_files:
+        print(file)
+    print()
+    for file in interactions_files:
+        print(file)
+    print()
+    for file in test_suite_files:
+        print(file)
+
+    #print(type(downloaded_requests_get))
+    #print(type(downloaded_requests_get.text))
+    #print(type(downloaded_requests_get.content))
     #downloaded_page_2_json = downloaded_requests_get.json()
     #print(downloaded_page_2_json)
-
-
     #print("downloaded_doc.text:",downloaded_doc.text)
-    dict_containing_json = json.loads(downloaded_requests_get.content)
     #print(json.dumps(dict_containing_json, indent=4))
     #print(type(dict_containing_json))
     #print(dict_containing_json)
-    json_dumps_dict = json.dumps(dict_containing_json['values'], indent=4)    #, indent=4
     #print(json_dumps_dict)
-    rsplit_json_dumps_dict = json_dumps_dict.rsplit("\n")
-    for line in rsplit_json_dumps_dict:
-        if line.find('"path') > 0:
-            if line.find("docx") > 0:
-                print("Docx document:",line)
-            elif line.find("xsd") > 0 or line.find("wsdl") > 0:
-                print("Schema file:",line)
 
     #print(json_dumps_dict['path'])
     #json_loads_dumps = json.loads(json_dumps_dict)
