@@ -46,7 +46,7 @@ def __test_download_from_Bitbucket():
         #Relative links to schema files (wsdl and xsd) can be found with search expression: "path
 
     #document_link = "https://bitbucket.org/rivta-domains/riv.clinicalprocess.activity.request/src/1.0.2/docs/TKB_clinicalprocess_activity_request.docx"
-    print()
+    """print()
     downloaded_requests_get = requests.get(document_link, stream=True)
     dict_containing_json = json.loads(downloaded_requests_get.content)
     json_dumps_dict = json.dumps(dict_containing_json['values'], indent=1)
@@ -84,7 +84,13 @@ def __test_download_from_Bitbucket():
         print(file)
     print()
     for file in test_suite_files:
-        print(file)
+        print(file)"""
+
+    #files = __get_files_from_bitbucket_list(document_link, FOLDER_CODE_GEN)
+    #files = __get_files_from_bitbucket_list(document_link, FOLDER_DOCS)
+    __print_domain_files(__get_files_from_bitbucket_list(document_link, FOLDER_CORE_COMPONENTS))
+    __print_domain_files(__get_files_from_bitbucket_list(document_link, FOLDER_INTERACTIONS))
+    #files = __get_files_from_bitbucket_list(document_link, FOLDER_TEST_SUITE)
 
     #print(type(downloaded_requests_get))
     #print(type(downloaded_requests_get.text))
@@ -130,6 +136,61 @@ def __test_download_from_Bitbucket():
     #x = json.dumps(json_file, indent=4, sort_keys=True)
     #print(x["href"])
 
+def __print_domain_files(files):
+    print()
+    for file in files:
+        print(file)
+
+def __get_files_from_bitbucket_list(document_link, file_folder):
+    downloaded_requests_get = requests.get(document_link, stream=True)
+    dict_containing_json = json.loads(downloaded_requests_get.content)
+    json_dumps_dict = json.dumps(dict_containing_json['values'], indent=1)
+    rsplit_json_dumps_dict = json_dumps_dict.rsplit("\n")
+    code_gen_files = []
+    docs_files = []
+    core_components_files = []
+    interactions_files = []
+    test_suite_files = []
+    for line in rsplit_json_dumps_dict:
+        if line.find('"path') > 0:
+            if line.find("pom") > 0 or line.find(".bat") > 0:
+                code_gen_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+            elif line.find(".docx") > 0:
+                docs_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+            elif line.find("core_components") > 0:
+                if line.find(".xsd") > 0 or line.find(".wsdl") > 0:
+                    core_components_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+            elif line.find("interactions") > 0:
+                if line.find(".xsd") > 0 or line.find(".wsdl") > 0:
+                    interactions_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+            elif line.find("test-suite") > 0 and line.find(".") > 0:
+                test_suite_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+
+    """for file in code_gen_files:
+        print(file)
+    print()
+    for file in docs_files:
+        print(file)
+    print()
+    for file in core_components_files:
+        print(file)
+    print()
+    for file in interactions_files:
+        print(file)
+    print()
+    for file in test_suite_files:
+        print(file)"""
+
+    if file_folder == FOLDER_CODE_GEN:
+        return code_gen_files
+    elif file_folder == FOLDER_DOCS:
+        return docs_files
+    elif file_folder == FOLDER_CORE_COMPONENTS:
+        return core_components_files
+    elif file_folder == FOLDER_INTERACTIONS:
+        return interactions_files
+    elif file_folder == FOLDER_TEST_SUITE:
+        return test_suite_files
 
 def __test_inspection_comments(document,inspection_type,inspection_result):
     comment = ""
