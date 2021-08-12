@@ -197,6 +197,10 @@ def __test_build_inmemory_filesystem(domain_name, tag):
     for file in file_list:
         repo_file = __get_file_from_repo(dir, "/"+domain_name, tag, "ProcessRequestConfirmationInteraction", file)
     #    __add_file_2_dir(dir, domain_name, FOLDER_INTERACTIONS)
+        #print("file:",file)
+        #print("repo_file:",repo_file)
+        #print("downloaded_file:",downloaded_file)
+        __add_file_2_dir(dir, "/"+domain_name, FOLDER_INTERACTIONS, file, downloaded_file)
 
     print("\n")
     print(dir.tree())
@@ -221,7 +225,12 @@ def __get_file_from_repo(dir, domain_name, tag, interaction_name, file_name):
     file_link = __get_file_link(domain_name, tag, file_name, file_head_hash)
     downloaded_file = __get_downloaded_file(file_link)
 
-    __add_file_2_dir(dir, domain_name, FOLDER_INTERACTIONS, path_to_folder_and_file, downloaded_file)
+    #print("path_to_folder_and_file:",path_to_folder_and_file)
+    #print("file_page_link:",file_page_link)
+    #print("file_link:",file_link)
+    #print("downloaded_file:",downloaded_file)
+
+    #__add_file_2_dir(dir, domain_name, FOLDER_INTERACTIONS, path_to_folder_and_file, downloaded_file)
 
     """global document
     if downloaded_file.status_code != 404:
@@ -230,7 +239,7 @@ def __get_file_from_repo(dir, domain_name, tag, interaction_name, file_name):
 
         __add_files(dir,"/"+domain_name,folder_name)"""
 
-    return repo_file
+    return downloaded_file
 
 
 def __create_inmemory_file_structure(domain_folder):
@@ -275,14 +284,16 @@ def __add_interactions_subfolders(dir,domain_folder,subfolders):
 
 def __add_file_2_dir(dir,domain_name,folder_name,file_name, file_contents):
     if folder_name == FOLDER_INTERACTIONS:
-        global document
-        with dir.open(domain_name+file_name, 'x') as dir_file:
-            print("file_name:",file_name)
-            print("dir_file:",dir_file)
+        file_2_save = domain_name+"/"+file_name
+        #print("file_2_save:",file_2_save)
+        with dir.open(file_2_save, 'x') as dir_file:
+            #print("file_name:",file_name)
+            #print("dir_file:",dir_file)
             dir_file.write(str(file_contents))
             #dir.writefile(file_name,dir_file)
-        with dir.open(domain_name+file_name, 'r') as dir_file:
+        with dir.open(file_2_save, 'r') as dir_file:
             this_dir_file = dir_file.read()
+            print(this_dir_file,file_name)
 
     return dir
 
@@ -339,7 +350,9 @@ def __get_file_page_link(domainname, tag, file_folder, file_name):
     url_domain = globals.domain_prefix + domainname + "/"
     url_src = "src/"
     url_tag = tag
-    url_file_folder = file_folder + "/"
+    url_file_folder = ""
+    if ".xsd" not in file_name and ".wsdl" not in file_name:
+        url_file_folder = file_folder + "/"
     domain_name = domainname.replace(".","_")
     #url_doc = document +"_" + domain_name + ".docx"
     document_page_link = url_prefix+url_domain+url_src+url_tag+url_file_folder+file_name
@@ -359,6 +372,7 @@ def __get_file_link(domain_name, tag, file_name, head_hash):
     domain_name = domain_name.replace(".","_")
     #url_doc = document +"_" + domain_name + ".docx"
     file_link = url_prefix+url_domain+url_raw+head_hash+"/"+url_docs+file_name
+    #print("__get_file_link.file_link:",file_link)
 
     return file_link
 
@@ -382,10 +396,12 @@ def __wsdlvalidation():
     #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'w') as tk_1_wsdl: tk_1_wsdl.write('text...')
     #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'w') as tk_1_xsd_1: tk_1_xsd_1.write('text...')
 
+    #print(dir.isfile(('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl')))
     xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'r')
     xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'r')
+    #print(xml_path.read())
 
-    print(validate(xml_path, xsd_path))
+    validate(xml_path, xsd_path)
 
 def validate(xml_path: str, xsd_path: str) -> bool:
     print("xml_path:", xml_path)
