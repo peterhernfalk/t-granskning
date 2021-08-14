@@ -86,54 +86,13 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     global dir
     dir = __create_inmemory_file_structure("/"+domain_name)
 
-    ### 2do ###
+    ### 2do: replace by dynamic code ###
     interactions_subfolders = []
     interactions_subfolders.append("ProcessRequestConfirmationInteraction")
     interactions_subfolders.append("ProcessRequestInteraction")
     interactions_subfolders.append("ProcessRequestOutcomeInteraction")
     dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
     ### 2do ###
-
-    # Add domain files
-    ### dev ###
-    #with dir.open('/riv.clinicalprocess.activity.request/code_gen/jaxws/pom.xml', 'w') as pom: pom.write('text...')
-    #with dir.open('/riv.clinicalprocess.activity.request/code_gen/wcf/generate-src-rivtabp21.bat', 'w') as bat: bat.write('text...')
-    #with dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'w') as dom_xsd_1: dom_xsd_1.write('text...')
-    #with dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/codes.xsd', 'w') as dom_xsd_2: dom_xsd_2.write('text...')
-    #with dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/codes.xsd', 'w') as dom_xsd_2: dom_xsd_2.write('text...')
-    #with dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/interoperability_headers_1.0.xsd', 'w') as dom_xsd_3: dom_xsd_3.write('text...')
-    #with dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/itintegration_registry_1.0.xsd', 'w') as dom_xsd_4: dom_xsd_4.write('text...')
-    #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'w') as tk_1_wsdl: tk_1_wsdl.write('text...')
-    #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'w') as tk_1_xsd_1: tk_1_xsd_1.write('text...')
-
-    """dir.open('/riv.clinicalprocess.activity.request/code_gen/jaxws/pom.xml', 'x')
-    dir.open('/riv.clinicalprocess.activity.request/code_gen/wcf/generate-src-rivtabp21.bat', 'x')
-    dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'x')
-    dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/codes.xsd', 'x')
-    dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/interoperability_headers_1.0.xsd', 'x')
-    dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/itintegration_registry_1.0.xsd', 'x')"""
-    ### dev ###
-
-    ### dev ###
-    """file_2_download = "TKB_clinicalprocess_activity_request.docx"
-    file_page_link = __get_file_page_link(domain_name, tag, FOLDER_DOCS, file_2_download)
-    downloaded_file_page = __get_downloaded_file(file_page_link)
-    file_head_hash = __get_head_hash(downloaded_file_page)
-    file_link = __get_file_link(domain_name, tag, FOLDER_DOCS, file_2_download, file_head_hash)
-    downloaded_file = __get_downloaded_file(file_link)
-    global document
-    if downloaded_file.status_code != 404:
-        if file_2_download.find(".docx") > -1:
-            document = __get_docx_document(downloaded_file)
-            #document_paragraphs = ""
-            #for paragraph in document.paragraphs:
-            #    if paragraph.text.strip() != "":
-            #        document_paragraphs += paragraph.text + "<br>"
-            #        #print(paragraph.text)
-
-        ###__add_files(dir,"/"+domain_name,FOLDER_DOCS,file_2_download)
-        #__get_file_from_repo(dir,"/"+domain_name, tag, )"""
-    ### dev ###
 
     """
     Examples:
@@ -160,37 +119,31 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                 else:
                     file_folder = FOLDER_CODE_GEN
                 downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
+                #print("code_gen, "+file_in_path+":\n", downloaded_file.text)
             if "docs" in file:
                 ### 2do ###
                 #file_2_download = "TKB_clinicalprocess_activity_request.docx"
                 delimiter_index = file.rfind("/")
                 path = "/"+domain_name+"/"+file[0:delimiter_index]
                 file_in_path = file[delimiter_index+1:]
-                print("file_in_path",file_in_path)
+                #print("docs.file_in_path",file_in_path)
                 file_page_link = __get_file_page_link(domain_name, tag, FOLDER_DOCS, file_in_path)
+                print("docs.file_page_link",file_page_link)
                 downloaded_file_page = __get_downloaded_file(file_page_link)
+                print("docs.downloaded_file_page",downloaded_file_page)
                 file_head_hash = __get_head_hash(downloaded_file_page)
                 file_link = __get_file_link(domain_name, tag, FOLDER_DOCS, file_in_path, file_head_hash)
+                print("docs.file_link",file_link)
                 downloaded_file = __get_downloaded_file(file_link)
                 #print(downloaded_file, file_link)
                 global document
                 if downloaded_file.status_code != 404:
-                    if file_in_path.find(".docx") > -1:
-                        document = __get_docx_document(downloaded_file)
-                        #document_paragraphs = ""
-                        #for paragraph in document.paragraphs:
-                        #    if paragraph.text.strip() != "":
-                        #        document_paragraphs += paragraph.text + "<br>"
-                        #        #print(paragraph.text)
-
-                    ###__add_files(dir,"/"+domain_name,FOLDER_DOCS,file_in_path)
-                    #__get_file_from_repo(dir,"/"+domain_name, tag, )
-                    #print("document.content",document.content)
-                    with io.BytesIO(document.content) as inmemoryfile:
-                        docx_document = Document(inmemoryfile)
+                    with io.BytesIO(downloaded_file.content) as inmemoryfile:
+                        #docx_document = Document(inmemoryfile)
                         #dir.open(domain_name + folder_name + "/" + interaction_folder + "/" + file_name, 'x')
-                        dir.open("/riv.clinicalprocess.activity.request/docs/"+file_in_path, 'x')
-                        dir.writefile(file_in_path, inmemoryfile)
+                        file_2_save = "/riv.clinicalprocess.activity.request/docs/"+file_in_path
+                        dir.open(file_2_save, 'x')
+                        dir.writefile(file_2_save, inmemoryfile)
             ### 2do ###
             if "core_components" in file or "interactions" in file:
                 delimiter_index = file.rfind("/")
@@ -235,6 +188,7 @@ def __print_domain_files(file_list):
         print()
 
 def __get_file_list_from_repo(document_link, file_folder):
+    ### 2do: simplify the code ###
     downloaded_requests_get = requests.get(document_link, stream=True)
     dict_containing_json = json.loads(downloaded_requests_get.content)
     json_dumps_dict = json.dumps(dict_containing_json['values'], indent=1)
@@ -417,19 +371,21 @@ def __get_file_page_link(domain_name, tag, file_folder, file_name):
     Returnerar: länk till dokumentsidan
     """
     if "docx" in file_name:
-        url_prefix = "https://bitbucket.org/rivta-domains"
+        url_prefix = "https://bitbucket.org/rivta-domains/"
         url_domain = globals.domain_prefix + domain_name + "/"
         url_src = "src/"
         url_tag = tag
         url_file_folder = file_folder + "/"
-        print("__get_file_page_link.file_folder",file_folder)
+        #print("__get_file_page_link.file_folder",file_folder)
         #if ".xsd" not in file_name and ".wsdl" not in file_name:
         #    url_file_folder = file_folder + "/"
         domain_name = domain_name.replace(".","_")
         #url_doc = document +"_" + domain_name + ".docx"
+        #app:     document_page_link = url_prefix+url_domain+url_src+url_tag+url_docs+url_doc
         file_page_link = url_prefix+url_domain+url_src+url_tag+url_file_folder+file_name
-        print("__get_file_page_link.inparameters",domain_name, tag, file_folder, file_name)
-        print("__get_file_page_link.page link elements",url_prefix,url_domain,url_src,url_tag,url_file_folder,file_name)
+        #print("__get_file_page_link.inparameters",domain_name, tag, file_folder, file_name)
+        #print("__get_file_page_link.page link elements",url_prefix,url_domain,url_src,url_tag,url_file_folder,file_name)
+        print("__get_file_page_link.docs.file_page_link",file_page_link)
     else:
         print("__get_file_page_link.inparams",domain_name, tag, file_folder, file_name)
         #file_page_link = __get_file_link(domain_name, tag, file_name, "")
@@ -450,7 +406,7 @@ def __get_file_link(domain_name, tag, file_folder, file_name, head_hash):
     Returnerar: länk som kan användas vid nerladdning av angiven fil
     """
     if "docx" in file_name:
-        url_prefix = "https://bitbucket.org/rivta-domains"
+        url_prefix = "https://bitbucket.org/rivta-domains/"
         url_domain = globals.domain_prefix + domain_name + "/"
         url_raw = "raw/"
         url_docs = "docs/"
@@ -476,8 +432,10 @@ def __get_docx_document(downloaded_document):
 
     Returnerar: docx-Documentet
     """
+    #print("__get_docx_document.downloaded_document",downloaded_document.content)
     with io.BytesIO(downloaded_document.content) as inmemoryfile:
         docx_document = Document(inmemoryfile)
+
 
     return docx_document
 
@@ -492,15 +450,15 @@ def __wsdlvalidation():
 
     #print(dir.isfile(('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl')))
 
-    #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'r')
-    #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'r')
+    xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'r')
+    xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'r')
     #print(xml_path.read())
 
     #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'r')
     #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'r')
     #print(xml_path.read())
 
-    #validate(xml_path, xsd_path)
+    validate(xml_path, xsd_path)
 
 def validate(xml_path: str, xsd_path: str) -> bool:
     print("xml_path:", xml_path)
