@@ -91,6 +91,9 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     interactions_subfolders.append("ProcessRequestConfirmationInteraction")
     interactions_subfolders.append("ProcessRequestInteraction")
     interactions_subfolders.append("ProcessRequestOutcomeInteraction")
+    #schemas_delimiter = file.find("schemas/interactions/")
+    #interaction_folder = file[schemas_delimiter + 21:delimiter_index]
+
     dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
     ### 2do ###
 
@@ -138,12 +141,14 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                 #print(downloaded_file, file_link)
                 global document
                 if downloaded_file.status_code != 404:
-                    with io.BytesIO(downloaded_file.content) as inmemoryfile:
+                    """with io.BytesIO(downloaded_file.content) as inmemoryfile:
                         #docx_document = Document(inmemoryfile)
                         #dir.open(domain_name + folder_name + "/" + interaction_folder + "/" + file_name, 'x')
                         file_2_save = "/riv.clinicalprocess.activity.request/docs/"+file_in_path
                         dir.open(file_2_save, 'x')
-                        dir.writefile(file_2_save, inmemoryfile)
+                        dir.writefile(file_2_save, inmemoryfile)"""
+                    path = "/riv.clinicalprocess.activity.request/docs/"
+                    __write_file_in_filesys(dir, path, file_in_path, downloaded_file)
             ### 2do ###
             if "core_components" in file or "interactions" in file:
                 delimiter_index = file.rfind("/")
@@ -180,6 +185,45 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
 
     #dir.close()
 
+def __create_inmemory_file_structure(domain_folder):
+    # Domain
+    dir = fs.open_fs("mem://")
+    dir.makedirs(domain_folder)
+    SubFS(MemoryFS(), domain_folder)
+
+    # Domain/code_gen
+    #dir.makedirs(domain_folder+FOLDER_CODE_GEN)
+    #SubFS(MemoryFS(), domain_folder+FOLDER_CODE_GEN)
+    dir.makedirs(domain_folder+FOLDER_JAXWS)
+    SubFS(MemoryFS(), domain_folder+FOLDER_JAXWS)
+    dir.makedirs(domain_folder+FOLDER_WCF)
+    SubFS(MemoryFS(), domain_folder+FOLDER_WCF)
+
+    # Domain/docs
+    dir.makedirs(domain_folder+FOLDER_DOCS)
+    SubFS(MemoryFS(), domain_folder+FOLDER_DOCS)
+
+    # Domain/schemas/core_components
+    dir.makedirs(domain_folder+FOLDER_CORE_COMPONENTS)
+    SubFS(MemoryFS(), domain_folder+FOLDER_CORE_COMPONENTS)
+
+    # Domain/schemas/interactions
+    dir.makedirs(domain_folder+FOLDER_INTERACTIONS)
+    SubFS(MemoryFS(), domain_folder+FOLDER_INTERACTIONS)
+
+    # Domain/test_suite
+    dir.makedirs(domain_folder+FOLDER_TEST_SUITE)
+    SubFS(MemoryFS(), domain_folder+FOLDER_TEST_SUITE)
+
+    return dir
+
+def __write_file_in_filesys(dir, path, file_name, downloaded_file):
+    with io.BytesIO(downloaded_file.content) as inmemoryfile:
+        file_2_save = path + file_name
+        dir.open(file_2_save, 'x')
+        dir.writefile(file_2_save, inmemoryfile)
+
+
 def __print_domain_files(file_list):
     print()
     for file_array in file_list:
@@ -198,7 +242,9 @@ def __get_file_list_from_repo(document_link, file_folder):
     core_components_files = []
     interactions_files = []
     test_suite_files = []
+    #interactions_subfolders = []
     for line in rsplit_json_dumps_dict:
+        delimiter_index = line.rfind("/")
         if line.find('"path') > 0:
             if line.find("pom") > 0 or line.find(".bat") > 0:
                 code_gen_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
@@ -208,10 +254,24 @@ def __get_file_list_from_repo(document_link, file_folder):
                 if line.find(".xsd") > 0 or line.find(".wsdl") > 0:
                     core_components_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
             elif line.find("interactions") > 0:
+                #schemas_delimiter = line.find("schemas/interactions/")
+                #interactions_subfolders.append(line[schemas_delimiter + 21:delimiter_index])
                 if line.find(".xsd") > 0 or line.find(".wsdl") > 0:
                     interactions_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
             elif line.find("test-suite") > 0 and line.find(".") > 0:
                 test_suite_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
+
+    #dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
+    """
+    interactions_subfolders = []
+    interactions_subfolders.append("ProcessRequestConfirmationInteraction")
+    interactions_subfolders.append("ProcessRequestInteraction")
+    interactions_subfolders.append("ProcessRequestOutcomeInteraction")
+    #schemas_delimiter = file.find("schemas/interactions/")
+    #interaction_folder = file[schemas_delimiter + 21:delimiter_index]
+
+    dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
+    """
 
     if file_folder == FOLDER_CODE_GEN:
         return code_gen_files
@@ -250,10 +310,12 @@ def __get_file_from_repo(dir, domain_name, tag, folder_name, interaction_folder,
     file_link = __get_file_link(domain_name, tag, folder_name+"/"+interaction_folder+"/", file_name, file_head_hash)
     downloaded_file = __get_downloaded_file(file_link)
 
-    with io.BytesIO(downloaded_file.content) as inmemoryfile:
+    """with io.BytesIO(downloaded_file.content) as inmemoryfile:
         file_2_save = domain_name+folder_name+"/"+interaction_folder+"/"+file_name
         dir.open(file_2_save, 'x')
-        dir.writefile(file_2_save,inmemoryfile)
+        dir.writefile(file_2_save,inmemoryfile)"""
+    path = domain_name+folder_name+"/"+interaction_folder+"/"
+    __write_file_in_filesys(dir, path, file_name, downloaded_file)
 
     """global document
     if downloaded_file.status_code != 404:
@@ -264,37 +326,7 @@ def __get_file_from_repo(dir, domain_name, tag, folder_name, interaction_folder,
     return downloaded_file
 
 
-def __create_inmemory_file_structure(domain_folder):
-    # Domain
-    dir = fs.open_fs("mem://")
-    dir.makedirs(domain_folder)
-    SubFS(MemoryFS(), domain_folder)
 
-    # Domain/code_gen
-    dir.makedirs(domain_folder+FOLDER_CODE_GEN)
-    SubFS(MemoryFS(), domain_folder+FOLDER_CODE_GEN)
-    dir.makedirs(domain_folder+FOLDER_JAXWS)
-    SubFS(MemoryFS(), domain_folder+FOLDER_JAXWS)
-    dir.makedirs(domain_folder+FOLDER_WCF)
-    SubFS(MemoryFS(), domain_folder+FOLDER_WCF)
-
-    # Domain/docs
-    dir.makedirs(domain_folder+FOLDER_DOCS)
-    SubFS(MemoryFS(), domain_folder+FOLDER_DOCS)
-
-    # Domain/schemas/core_components
-    dir.makedirs(domain_folder+FOLDER_CORE_COMPONENTS)
-    SubFS(MemoryFS(), domain_folder+FOLDER_CORE_COMPONENTS)
-
-    # Domain/schemas/interactions
-    dir.makedirs(domain_folder+FOLDER_INTERACTIONS)
-    SubFS(MemoryFS(), domain_folder+FOLDER_INTERACTIONS)
-
-    # Domain/test_suite
-    dir.makedirs(domain_folder+FOLDER_TEST_SUITE)
-    SubFS(MemoryFS(), domain_folder+FOLDER_TEST_SUITE)
-
-    return dir
 
 def __add_interactions_subfolders(dir,domain_folder,subfolders):
     for subfolder in subfolders:
