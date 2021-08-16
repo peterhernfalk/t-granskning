@@ -23,11 +23,21 @@ FOLDER_SCHEMAS = "/schemas"
 FOLDER_CORE_COMPONENTS = "/schemas/core_components"
 FOLDER_INTERACTIONS = "/schemas/interactions"
 FOLDER_TEST_SUITE = "/test_suite"
+global dir
 
 local_test = True
 
-def __download_from_Bitbucket():
-    link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/riv.clinicalprocess.activity.request/src/ee5bfaa4572cca699be516e1bc2fb374997c8879/?max_depth=100&pagelen=100"
+
+def __build_and_load_inmemory_filesystem(domain_name, tag):
+    #__download_from_Bitbucket(domain_name, tag)
+    global link_2_repo_listing
+    link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=100&tag="+tag
+
+    global dir
+    dir = __create_inmemory_file_structure("/"+domain_name)
+
+    global domain_folder_name
+    domain_folder_name = domain_name
 
     global file_list
     file_list = []
@@ -38,82 +48,26 @@ def __download_from_Bitbucket():
     file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_TEST_SUITE))
     __print_domain_files(file_list)
 
-    #print(type(downloaded_requests_get))
-    #print(type(downloaded_requests_get.text))
-    #print(type(downloaded_requests_get.content))
-    #downloaded_page_2_json = downloaded_requests_get.json()
-    #print(downloaded_page_2_json)
-    #print("downloaded_doc.text:",downloaded_doc.text)
-    #print(json.dumps(dict_containing_json, indent=4))
-    #print(type(dict_containing_json))
-    #print(dict_containing_json)
-    #print(json_dumps_dict)
-
-    #print(json_dumps_dict['path'])
-    #json_loads_dumps = json.loads(json_dumps_dict)
-    #print(json_loads_dumps)
-
-    #json_value_list = list(dict_containing_json.values())
-    #json_value_list_1 = json.dumps(json_value_list[1])
-    #json_test = json.loads(json_value_list_1)
-    #print(type(json_test),json_test)
-
-    #json_test2 = str(json_test).replace("[{'path'", "{'path'").replace("2188}]","2188}")
-    #print("json_test2:",json_test2)
-
-    #print(json_value_list_1)
-    #print(type(json_value_list_1))
-    #json.load(json_value_list)
-
-    #for item in dict_containing_json.items():
-    #    print(str(item))
-
-    #print(json.loads(dict_containing_json.values()))
-    #print(dict_containing_json.values())
-    #print(dict_containing_json.keys())
-    #print(dict_containing_json.items())
-    #for value in dict_containing_json.values():
-    #    print("value:",value)
-
-    #print(f"json_file['values']: {json_file['values']}")
-    #print({json_file['values']['mimetype']})
-    #print(json_file['values'])
-    #print(json_file['values']['path'])
-    #x = json.dumps(json_file, indent=4, sort_keys=True)
-    #print(x["href"])
-
-def __build_and_load_inmemory_filesystem(domain_name, tag):
-    global dir
-    dir = __create_inmemory_file_structure("/"+domain_name)
-
     ### 2do: replace by dynamic code ###
-    interactions_subfolders = []
-    interactions_subfolders.append("ProcessRequestConfirmationInteraction")
-    interactions_subfolders.append("ProcessRequestInteraction")
-    interactions_subfolders.append("ProcessRequestOutcomeInteraction")
+    #interactions_subfolders = []
+    #interactions_subfolders.append("ProcessRequestConfirmationInteraction")
+    #interactions_subfolders.append("ProcessRequestInteraction")
+    #interactions_subfolders.append("ProcessRequestOutcomeInteraction")
     #schemas_delimiter = file.find("schemas/interactions/")
     #interaction_folder = file[schemas_delimiter + 21:delimiter_index]
 
-    dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
+    #dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
+    dir = __save_interactions_subfolders_in_filesys(dir)
+    #print(__save_interactions_subfolders_in_filesys(dir))
     ### 2do ###
 
-    """
-    Examples:
-        code_gen/jaxws/pom.xml
-        docs/IS_clinicalprocess_activity_request.docx
-        schemas/core_components/clinicalprocess_activity_request_1.0.xsd
-        schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl
-    """
-
-    global file_list
+    #global file_list
     for file_array in file_list:
         for file in file_array:
             if "code_gen" in file:
                 delimiter_index = file.rfind("/")
                 path = "/"+domain_name+"/"+file[0:delimiter_index]
                 file_in_path = file[delimiter_index+1:]
-                #print("path,file_in_path",path,file_in_path)
-                #downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, "ProcessRequestConfirmationInteraction", file_in_path)
                 interaction_folder = ""
                 if "jaxws" in file:
                     file_folder = FOLDER_CODE_GEN + "/jaxws"
@@ -122,35 +76,23 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                 else:
                     file_folder = FOLDER_CODE_GEN
                 downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
-                #print("code_gen, "+file_in_path+":\n", downloaded_file.text)
+                print("downloaded file", downloaded_file, file_in_path, "\tSaved in filesys:",dir.exists("/"+domain_name+file_folder+"/"+file_in_path))
             if "docs" in file:
-                ### 2do ###
-                #file_2_download = "TKB_clinicalprocess_activity_request.docx"
                 delimiter_index = file.rfind("/")
                 path = "/"+domain_name+"/"+file[0:delimiter_index]
                 file_in_path = file[delimiter_index+1:]
-                #print("docs.file_in_path",file_in_path)
                 file_page_link = __get_file_page_link(domain_name, tag, FOLDER_DOCS, file_in_path)
-                print("docs.file_page_link",file_page_link)
                 downloaded_file_page = __get_downloaded_file(file_page_link)
-                print("docs.downloaded_file_page",downloaded_file_page)
                 file_head_hash = __get_head_hash(downloaded_file_page)
                 file_link = __get_file_link(domain_name, tag, FOLDER_DOCS, file_in_path, file_head_hash)
-                print("docs.file_link",file_link)
                 downloaded_file = __get_downloaded_file(file_link)
-                #print(downloaded_file, file_link)
                 global document
                 if downloaded_file.status_code != 404:
-                    """with io.BytesIO(downloaded_file.content) as inmemoryfile:
-                        #docx_document = Document(inmemoryfile)
-                        #dir.open(domain_name + folder_name + "/" + interaction_folder + "/" + file_name, 'x')
-                        file_2_save = "/riv.clinicalprocess.activity.request/docs/"+file_in_path
-                        dir.open(file_2_save, 'x')
-                        dir.writefile(file_2_save, inmemoryfile)"""
-                    path = "/riv.clinicalprocess.activity.request/docs/"
-                    __write_file_in_filesys(dir, path, file_in_path, downloaded_file)
-            ### 2do ###
+                    path = "/"+domain_name+"/docs/"
+                    dir = __write_file_in_filesys(dir, path, file_in_path, downloaded_file)
+                print("downloaded_file", downloaded_file, file_in_path, "\tSaved in filesys:",dir.exists("/" + domain_name + FOLDER_DOCS + "/" + file_in_path))
             if "core_components" in file or "interactions" in file:
+                #print("__build_and_load_inmemory_filesystem.file",file)
                 delimiter_index = file.rfind("/")
                 path = "/"+domain_name+"/"+file[0:delimiter_index]
                 file_in_path = file[delimiter_index+1:]
@@ -162,16 +104,14 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                 else:
                     schemas_delimiter = file.find("schemas/interactions/")
                     interaction_folder = file[schemas_delimiter+21:delimiter_index]
-                    print("interaction_folder",interaction_folder)
+                    #print("interaction_folder",interaction_folder)
                     file_folder = FOLDER_INTERACTIONS
                 downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
-                if "schemas" in path:
-                    print("downloaded schema file",path,file_in_path,downloaded_file)
-                    #print("\tdownloaded_file.text",downloaded_file.text)
-                    #print("\tdownloaded_file.content",downloaded_file.content)
+                if "core_components" in path:
+                    print("downloaded_file", downloaded_file, file_in_path, "\tSaved in filesys:", dir.exists("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path))
+                elif "interactions" in path:
+                    print("downloaded_file", downloaded_file, file_in_path, "\tSaved in filesys:", dir.exists("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path))
                 #dir.writefile(downloaded_file, path, file_in_path)
-
-
 
     print("\n")
     print(dir.tree())
@@ -184,6 +124,20 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     #os.system("open -a Safari mem://")
 
     #dir.close()
+
+#def __download_from_Bitbucket(domain_name, tag):
+#    global link_2_repo_listing
+
+#    link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=100&tag="+tag
+
+    """global file_list
+    file_list = []
+    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_CODE_GEN))
+    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_DOCS))
+    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_CORE_COMPONENTS))
+    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_INTERACTIONS))
+    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_TEST_SUITE))
+    __print_domain_files(file_list)"""
 
 def __create_inmemory_file_structure(domain_folder):
     # Domain
@@ -218,11 +172,19 @@ def __create_inmemory_file_structure(domain_folder):
     return dir
 
 def __write_file_in_filesys(dir, path, file_name, downloaded_file):
+    temp_dir = dir
     with io.BytesIO(downloaded_file.content) as inmemoryfile:
         file_2_save = path + file_name
-        dir.open(file_2_save, 'x')
-        dir.writefile(file_2_save, inmemoryfile)
+        file_2_save = file_2_save.replace("//","/")
+        #print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), file_2_save)
+        if temp_dir.exists(file_2_save) == False:
+            temp_dir.open(file_2_save, 'x')
+            temp_dir.writefile(file_2_save, inmemoryfile)
+        #print("__write_file_in_filesys, after", temp_dir.exists(file_2_save), file_2_save)
+        #print("__write_file_in_filesys.file_2_save",file_2_save,dir.exists(file_2_save))
 
+    #print(dir.tree())
+    return temp_dir
 
 def __print_domain_files(file_list):
     print()
@@ -242,10 +204,13 @@ def __get_file_list_from_repo(document_link, file_folder):
     core_components_files = []
     interactions_files = []
     test_suite_files = []
+
+    #global interactions_subfolders
     #interactions_subfolders = []
     for line in rsplit_json_dumps_dict:
         delimiter_index = line.rfind("/")
         if line.find('"path') > 0:
+            #print("__get_file_list_from_repo.interactions line", line)
             if line.find("pom") > 0 or line.find(".bat") > 0:
                 code_gen_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
             elif line.find(".docx") > 0:
@@ -254,8 +219,10 @@ def __get_file_list_from_repo(document_link, file_folder):
                 if line.find(".xsd") > 0 or line.find(".wsdl") > 0:
                     core_components_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
             elif line.find("interactions") > 0:
-                #schemas_delimiter = line.find("schemas/interactions/")
+                #print("__get_file_list_from_repo.interactions line",line)
+                schemas_delimiter = line.find("schemas/interactions/")
                 #interactions_subfolders.append(line[schemas_delimiter + 21:delimiter_index])
+                #print("__get_file_list_from_repo.interactions_subfolders",interactions_subfolders)
                 if line.find(".xsd") > 0 or line.find(".wsdl") > 0:
                     interactions_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
             elif line.find("test-suite") > 0 and line.find(".") > 0:
@@ -284,22 +251,8 @@ def __get_file_list_from_repo(document_link, file_folder):
     elif file_folder == FOLDER_TEST_SUITE:
         return test_suite_files
 
-def __test_inspection_comments(document,inspection_type,inspection_result):
-    comment = ""
-    return comment
 
-class InspectionComment:
-    """
-    Inspected_object: TKB
-    Inspection: Revision_history
-    Req: Revision_history MUST have same version as domain-tag
-    Req_exclusion: don't use version suffix in comparison
-    Inspection_comment: SVART: revisionshistoriken behöver uppdateras till granska domänversion
-    """
-    inspected_comment = ""
-
-
-def __get_file_from_repo(dir, domain_name, tag, folder_name, interaction_folder, file_name):
+def __get_file_from_repo(in_dir, domain_name, tag, folder_name, interaction_folder, file_name):
     #https://bitbucket.org/rivta-domains/riv.clinicalprocess.activity.request/raw/ee5bfaa4572cca699be516e1bc2fb374997c8879/schemas/core_components/clinicalprocess_activity_request_1.0.xsd
 
     path_to_folder_and_file = file_name
@@ -310,12 +263,11 @@ def __get_file_from_repo(dir, domain_name, tag, folder_name, interaction_folder,
     file_link = __get_file_link(domain_name, tag, folder_name+"/"+interaction_folder+"/", file_name, file_head_hash)
     downloaded_file = __get_downloaded_file(file_link)
 
-    """with io.BytesIO(downloaded_file.content) as inmemoryfile:
-        file_2_save = domain_name+folder_name+"/"+interaction_folder+"/"+file_name
-        dir.open(file_2_save, 'x')
-        dir.writefile(file_2_save,inmemoryfile)"""
     path = domain_name+folder_name+"/"+interaction_folder+"/"
-    __write_file_in_filesys(dir, path, file_name, downloaded_file)
+    global dir
+    dir = __write_file_in_filesys(in_dir, path, file_name, downloaded_file)
+    #print("__get_file_from_repo, after", dir.exists("/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd"))
+    #print("__get_file_from_repo, after", dir.exists(path+file_name),path+file_name)
 
     """global document
     if downloaded_file.status_code != 404:
@@ -326,12 +278,33 @@ def __get_file_from_repo(dir, domain_name, tag, folder_name, interaction_folder,
     return downloaded_file
 
 
-
-
 def __add_interactions_subfolders(dir,domain_folder,subfolders):
     for subfolder in subfolders:
         dir.makedirs(domain_folder+FOLDER_INTERACTIONS+"/"+subfolder)
         SubFS(MemoryFS(), domain_folder+FOLDER_INTERACTIONS+"/"+subfolder)
+
+    return dir
+
+def __save_interactions_subfolders_in_filesys(dir):
+    global link_2_repo_listing
+    global domain_folder_name
+    downloaded_requests_get = requests.get(link_2_repo_listing, stream=True)
+    dict_containing_json = json.loads(downloaded_requests_get.content)
+    json_dumps_dict = json.dumps(dict_containing_json['values'], indent=1)
+    rsplit_json_dumps_dict = json_dumps_dict.rsplit("\n")
+
+    interactions_subfolders = []
+    for line in rsplit_json_dumps_dict:
+        delimiter_index = line.rfind('",')
+        if line.find('"path') > 0:
+            if line.find("schemas/interactions/") > 0:
+                schemas_delimiter = line.find("schemas/interactions/")
+                subfolder_name = line[schemas_delimiter + 21:delimiter_index]
+                if subfolder_name != "" and subfolder_name not in interactions_subfolders:
+                    interactions_subfolders.append(subfolder_name)
+                    #print("interactions_subfolders",interactions_subfolders)
+                    dir.makedirs(domain_folder_name+FOLDER_INTERACTIONS+"/"+subfolder_name)
+                    SubFS(MemoryFS(), domain_folder_name+FOLDER_INTERACTIONS+"/"+subfolder_name)
 
     return dir
 
@@ -351,7 +324,7 @@ def __add_interactions_subfolders(dir,domain_folder,subfolders):
 
     return dir"""
 
-def __add_files(dir,domain_name,folder_name,files):
+"""def __add_files(dir,domain_name,folder_name,files):
     if folder_name == FOLDER_DOCS:
         global document
         # for paragraph in document.paragraphs:
@@ -369,7 +342,7 @@ def __add_files(dir,domain_name,folder_name,files):
         ### dev ###
     #elif folder_name == FOLDER_CORE_COMPONENTS:
 
-    return dir
+    return dir"""
 
 def __get_downloaded_file(file_link):
     """
@@ -417,9 +390,9 @@ def __get_file_page_link(domain_name, tag, file_folder, file_name):
         file_page_link = url_prefix+url_domain+url_src+url_tag+url_file_folder+file_name
         #print("__get_file_page_link.inparameters",domain_name, tag, file_folder, file_name)
         #print("__get_file_page_link.page link elements",url_prefix,url_domain,url_src,url_tag,url_file_folder,file_name)
-        print("__get_file_page_link.docs.file_page_link",file_page_link)
+        #print("__get_file_page_link.docs.file_page_link",file_page_link)
     else:
-        print("__get_file_page_link.inparams",domain_name, tag, file_folder, file_name)
+        #print("__get_file_page_link.inparams",domain_name, tag, file_folder, file_name)
         #file_page_link = __get_file_link(domain_name, tag, file_name, "")
         url_prefix = "https://bitbucket.org/rivta-domains"
         url_domain = globals.domain_prefix + domain_name
@@ -482,15 +455,24 @@ def __wsdlvalidation():
 
     #print(dir.isfile(('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl')))
 
-    xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'r')
-    xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'r')
-    #print(xml_path.read())
+    print("dir.exists: wsdl",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl'))
+    print("dir.exists: xsd",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd'))
+    #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'r')
+    #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'r')
+    #print(xsd_path.read())
 
     #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'r')
     #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'r')
-    #print(xml_path.read())
 
-    validate(xml_path, xsd_path)
+    #xml_path = dir.open('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl', 'r')
+    #xsd_path = dir.open('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsResponder_2.0.xsd', 'r')
+    #print(dir.open('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl', 'r'))
+    #print(dir.open('/riv.clinicalprocess.healthcond.basic/schemas/core_components/itintegration_registry_1.0.xsd', 'r'))
+    #print("dir.isfile",dir.isfile('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl'))
+
+    #print(xml_path.read())
+    #print(xsd_path.read())
+    #validate(xml_path, xsd_path)
 
 def validate(xml_path: str, xsd_path: str) -> bool:
     print("xml_path:", xml_path)
@@ -503,11 +485,31 @@ def validate(xml_path: str, xsd_path: str) -> bool:
 
     return "result"
 
+def __test_inspection_comments(document,inspection_type,inspection_result):
+    comment = ""
+    return comment
+
+class InspectionComment:
+    """
+    Inspected_object: TKB
+    Inspection: Revision_history
+    Req: Revision_history MUST have same version as domain-tag
+    Req_exclusion: don't use version suffix in comparison
+    Inspection_comment: SVART: revisionshistoriken behöver uppdateras till granska domänversion
+    """
+    inspected_comment = ""
+
 
 ##### Execute test #####
 if local_test == True:
-    __download_from_Bitbucket()
-    __build_and_load_inmemory_filesystem("riv.clinicalprocess.activity.request", "1.0.2")
+    current_domain = "riv.clinicalprocess.healthcond.certificate"
+    current_tag = "4.0.5"
+    current_domain = "riv.clinicalprocess.activity.request"
+    current_tag = "1.0.2"
+    #current_domain = "riv.clinicalprocess.healthcond.basic"
+    #current_tag = "1.0.10"
+
+    __build_and_load_inmemory_filesystem(current_domain, current_tag)
     __wsdlvalidation()
 
     #__test_inspection_comments(globals.TKB,"REF-LINKS",404)
