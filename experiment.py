@@ -448,6 +448,13 @@ def __wsdlvalidation():
     #pip install lxml
     from lxml import etree
     global dir
+
+    wsdl = "/riv.clinicalprocess.logistics.logistics/schemas/interactions/GetCareContactsInteraction/GetCareContactsInteraction_3.0_RIVTABP21.wsdl"
+    xsd = "/riv.clinicalprocess.logistics.logistics/schemas/interactions/GetCareContactsInteraction/GetCareContactsResponder_3.0.xsd"
+
+    wsdl = "/riv.crm.requeststatus/schemas/interactions/GetRequestActivitiesInteraction/GetRequestActivitiesInteraction_2.0_RIVTABP21.wsdl"
+    xsd = "/riv.crm.requeststatus/schemas/interactions/GetRequestActivitiesInteraction/GetRequestActivitiesResponder_2.0.xsd"
+
     #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/','r')
     #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd','r')
     #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'w') as tk_1_wsdl: tk_1_wsdl.write('text...')
@@ -455,8 +462,8 @@ def __wsdlvalidation():
 
     #print(dir.isfile(('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl')))
 
-    print("dir.exists: wsdl",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl'))
-    print("dir.exists: xsd",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd'))
+    #print("dir.exists: wsdl",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl'))
+    #print("dir.exists: xsd",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd'))
     #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'r')
     #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'r')
     #print(xsd_path.read())
@@ -470,8 +477,22 @@ def __wsdlvalidation():
     #print(dir.open('/riv.clinicalprocess.healthcond.basic/schemas/core_components/itintegration_registry_1.0.xsd', 'r'))
     #print("dir.isfile",dir.isfile('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl'))
 
-    #print(xml_path.read())
-    #print(xsd_path.read())
+    print("wsdl, dir.exists:",dir.exists(wsdl))
+    if dir.exists(wsdl) == True:
+        print("wsdl, dir.isfile:",dir.isfile(wsdl))
+        if dir.isfile(wsdl) == True:
+            print("wsdl, dir.open:",dir.open(wsdl))
+        if dir.exists(wsdl) == True and dir.isfile(wsdl) == True:
+            print(wsdl.read())
+
+    print("xsd, dir.exists:",dir.exists(xsd))
+    if dir.exists(xsd) == True:
+        print("xsd, dir.isfile:",dir.isfile(xsd))
+        if dir.isfile(xsd) == True:
+            print("xsd, dir.open:",dir.open(xsd))
+        if dir.exists(xsd) == True and dir.isfile(xsd) == True:
+            print(xsd.read())
+
     #validate(xml_path, xsd_path)
 
 def validate(xml_path: str, xsd_path: str) -> bool:
@@ -502,12 +523,18 @@ class InspectionComment:
 
 ##### Execute test #####
 if local_test == True:
-    current_domain = "riv.clinicalprocess.healthcond.certificate"
+    current_domain = "riv.clinicalprocess.healthcond.certificate"           # Bug: empty TK folders
     current_tag = "4.0.5"
-    current_domain = "riv.clinicalprocess.activity.request"
+    current_domain = "riv.clinicalprocess.activity.request"                 # OK
     current_tag = "1.0.2"
-    #current_domain = "riv.clinicalprocess.healthcond.basic"
-    #current_tag = "1.0.10"
+    current_domain = "riv.clinicalprocess.healthcond.basic"                 # OK
+    current_tag = "1.0.10"
+    current_domain = "riv.clinicalprocess.healthcond.description"           # Bug: empty TK folders
+    current_tag = "2.1.16"
+    current_domain = "riv.clinicalprocess.logistics.logistics"              # OK
+    current_tag = "3.0.9"
+    current_domain = "riv.crm.requeststatus"                                # OK
+    current_tag = "2.0_RC5"
 
     __build_and_load_inmemory_filesystem(current_domain, current_tag)
     __wsdlvalidation()
