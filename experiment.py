@@ -76,7 +76,8 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                 else:
                     file_folder = FOLDER_CODE_GEN
                 downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
-                print("downloaded file", downloaded_file, file_in_path, "\tSaved in filesys:",dir.exists("/"+domain_name+file_folder+"/"+file_in_path))
+                print("downloaded file", downloaded_file, file_in_path, "\t",dir.exists("/"+domain_name+file_folder+"/"+file_in_path), "(exists)")
+                #print("pom",downloaded_file.text)
             if "docs" in file:
                 delimiter_index = file.rfind("/")
                 path = "/"+domain_name+"/"+file[0:delimiter_index]
@@ -90,7 +91,7 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                 if downloaded_file.status_code != 404:
                     path = "/"+domain_name+"/docs/"
                     dir = __write_file_in_filesys(dir, path, file_in_path, downloaded_file)
-                print("downloaded_file", downloaded_file, file_in_path, "\tSaved in filesys:",dir.exists("/" + domain_name + FOLDER_DOCS + "/" + file_in_path))
+                print("downloaded_file", downloaded_file, file_in_path, "\t",dir.exists("/" + domain_name + FOLDER_DOCS + "/" + file_in_path), "(exists)")
             if "core_components" in file or "interactions" in file:
                 #print("__build_and_load_inmemory_filesystem.file",file)
                 delimiter_index = file.rfind("/")
@@ -108,9 +109,9 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                     file_folder = FOLDER_INTERACTIONS
                 downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
                 if "core_components" in path:
-                    print("downloaded_file", downloaded_file, file_in_path, "\tSaved in filesys:", dir.exists("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path))
+                    print("downloaded_file, core", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")
                 elif "interactions" in path:
-                    print("downloaded_file", downloaded_file, file_in_path, "\tSaved in filesys:", dir.exists("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path))
+                    print("downloaded_file, interactions", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")
                 #dir.writefile(downloaded_file, path, file_in_path)
 
     print("\n")
@@ -176,14 +177,60 @@ def __write_file_in_filesys(dir, path, file_name, downloaded_file):
     with io.BytesIO(downloaded_file.content) as inmemoryfile:
         file_2_save = path + file_name
         file_2_save = file_2_save.replace("//","/")
-        #print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), file_2_save)
-        if temp_dir.exists(file_2_save) == False:
+        #if "interactions" in file_2_save:
+        #    print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), temp_dir.isempty(file_2_save), file_2_save)
+        if temp_dir.exists(file_2_save) == False:   #exists isempty
             temp_dir.open(file_2_save, 'x')
             temp_dir.writefile(file_2_save, inmemoryfile)
+
+        #elif temp_dir.exists(file_2_save) == True:
+        #    if temp_dir.isempty(file_2_save) == True:
+        #        temp_dir.remove(file_2_save)
+        #        temp_dir.open(file_2_save, 'x')
+        #        temp_dir.writefile(file_2_save, inmemoryfile)
+
+            #print("__write_file_in_filesys, isfile",temp_dir.isfile(file_2_save),file_2_save)
         #print("__write_file_in_filesys, after", temp_dir.exists(file_2_save), file_2_save)
         #print("__write_file_in_filesys.file_2_save",file_2_save,dir.exists(file_2_save))
 
     #print(dir.tree())
+    return temp_dir
+
+
+def __write_file_in_filesys_2(dir, path, file_name, downloaded_file):
+    ### 2do ###
+    temp_dir = dir
+    with dir.open(downloaded_file, 'rb', buffering =0) as inmemoryfile:
+        file_2_save = path + file_name
+        file_2_save = file_2_save.replace("//", "/")
+        if "interactions" in file_2_save:
+            print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), temp_dir.isempty(file_2_save),
+                  file_2_save)
+        if temp_dir.exists(file_2_save) == False:  # exists isempty
+            temp_dir.open(file_2_save, 'x')
+            temp_dir.writefile(file_2_save, inmemoryfile)
+
+    """with io.BytesIO(downloaded_file.content) as inmemoryfile:
+        file_2_save = path + file_name
+        file_2_save = file_2_save.replace("//","/")
+        if "interactions" in file_2_save:
+            print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), temp_dir.isempty(file_2_save), file_2_save)
+        if temp_dir.exists(file_2_save) == False:   #exists isempty
+            temp_dir.open(file_2_save, 'x')
+            temp_dir.writefile(file_2_save, inmemoryfile)"""
+
+        #elif temp_dir.exists(file_2_save) == True:
+        #    if temp_dir.isempty(file_2_save) == True:
+        #        temp_dir.remove(file_2_save)
+        #        temp_dir.open(file_2_save, 'x')
+        #        temp_dir.writefile(file_2_save, inmemoryfile)
+
+            #print("__write_file_in_filesys, isfile",temp_dir.isfile(file_2_save),file_2_save)
+        #print("__write_file_in_filesys, after", temp_dir.exists(file_2_save), file_2_save)
+        #print("__write_file_in_filesys.file_2_save",file_2_save,dir.exists(file_2_save))
+
+    #print(dir.tree())
+    ### 2do ###
     return temp_dir
 
 def __print_domain_files(file_list):
@@ -455,6 +502,8 @@ def __wsdlvalidation():
     wsdl = "/riv.crm.requeststatus/schemas/interactions/GetRequestActivitiesInteraction/GetRequestActivitiesInteraction_2.0_RIVTABP21.wsdl"
     xsd = "/riv.crm.requeststatus/schemas/interactions/GetRequestActivitiesInteraction/GetRequestActivitiesResponder_2.0.xsd"
 
+    xsd = "/riv.crm.requeststatus/schemas/core_components/crm_requeststatus_2.0.xsd"
+
     #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/','r')
     #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd','r')
     #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'w') as tk_1_wsdl: tk_1_wsdl.write('text...')
@@ -477,6 +526,11 @@ def __wsdlvalidation():
     #print(dir.open('/riv.clinicalprocess.healthcond.basic/schemas/core_components/itintegration_registry_1.0.xsd', 'r'))
     #print("dir.isfile",dir.isfile('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl'))
 
+    #pom = "/riv.crm.requeststatus/code_gen/jaxws/pom.xml"
+    #xsd = "/riv.crm.requeststatus/schemas/core_components/crm_requeststatus_2.0.xsd"
+    #x = dir.open(pom)
+
+
     print("wsdl, dir.exists:",dir.exists(wsdl))
     if dir.exists(wsdl) == True:
         print("wsdl, dir.isfile:",dir.isfile(wsdl))
@@ -491,7 +545,10 @@ def __wsdlvalidation():
         if dir.isfile(xsd) == True:
             print("xsd, dir.open:",dir.open(xsd))
         if dir.exists(xsd) == True and dir.isfile(xsd) == True:
-            print(xsd.read())
+            #x = dir.open(xsd)
+            #print(x)
+            print("xsd.read()")
+            #xmlschema_doc = etree.parse(xsd)
 
     #validate(xml_path, xsd_path)
 
@@ -521,6 +578,42 @@ class InspectionComment:
     inspected_comment = ""
 
 
+def __validate_files_in_filesys(current_domain):
+    file_2_display = "generate-src-rivtabp21.bat"   # OK
+    file_2_display = "crm_requeststatus_2.0.xsd"    # OK
+    #file_2_display = "AB_crm_requeststatus.docx"    #read(): UnicodeDecodeError: 'utf-8' codec can't decode byte 0xa1 in position 15: invalid start byte
+    #file_2_display = "GetRequestActivitiesInteraction_2.0_RIVTABP21.wsdl"   # Filen saknas i filsystemet
+    from fs import open_fs
+    global dir
+    home_fs = open_fs(dir)
+
+    file_in_dir = False
+    display_file_contents = False
+    filter = "*"    # *     *.xsd   *.doc
+
+    print("\n---Validering av innehållet i det virtuella filsystemet---")
+    for path in home_fs.walk.files(filter=[filter]):
+        exists_in_dir = dir.exists(path)
+        is_file = dir.isfile(path)
+        print("  "+path, "\t\t"+str(exists_in_dir) + " " + str(is_file) + "\t(exists, isfile)")
+        if file_2_display in path:
+            file_in_dir = True
+            with dir.open(path, 'r') as dir_file:
+                this_dir_file = dir_file.read()
+                if display_file_contents == True:
+                    print("\tfile contents:" + this_dir_file[0:50])
+                #__validate_xml_file(this_dir_file)
+    if file_in_dir == False:
+        print("\nSökt fil ("+file_2_display+") saknas i filsystemet!")
+    print("----------------------------------------------------------")
+
+def __validate_xml_file(xml_file):
+    xmlschema_doc = etree.parse(xml_file)
+    xmlschema = etree.XMLSchema(xmlschema_doc)
+    xml_doc = etree.parse(xml_file)
+    result = xmlschema.validate(xml_doc)
+
+
 ##### Execute test #####
 if local_test == True:
     current_domain = "riv.clinicalprocess.healthcond.certificate"           # Bug: empty TK folders
@@ -537,6 +630,10 @@ if local_test == True:
     current_tag = "2.0_RC5"
 
     __build_and_load_inmemory_filesystem(current_domain, current_tag)
-    __wsdlvalidation()
+    __validate_files_in_filesys(current_domain)
 
+    #__wsdlvalidation()
     #__test_inspection_comments(globals.TKB,"REF-LINKS",404)
+
+    global dir
+    dir.close()
