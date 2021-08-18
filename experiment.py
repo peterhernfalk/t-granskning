@@ -31,7 +31,7 @@ local_test = True
 def __build_and_load_inmemory_filesystem(domain_name, tag):
     #__download_from_Bitbucket(domain_name, tag)
     global link_2_repo_listing
-    link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=100&tag="+tag
+    link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=10&tag="+tag
 
     global dir
     dir = __create_inmemory_file_structure("/"+domain_name)
@@ -62,6 +62,7 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     ### 2do ###
 
     #global file_list
+    print(dir.tree())
     for file_array in file_list:
         for file in file_array:
             if "code_gen" in file:
@@ -178,22 +179,11 @@ def __write_file_in_filesys(dir, path, file_name, downloaded_file):
         file_2_save = path + file_name
         file_2_save = file_2_save.replace("//","/")
         #if "interactions" in file_2_save:
-        #    print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), temp_dir.isempty(file_2_save), file_2_save)
+        #print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), temp_dir.isempty(file_2_save), file_2_save)
         if temp_dir.exists(file_2_save) == False:   #exists isempty
             temp_dir.open(file_2_save, 'x')
             temp_dir.writefile(file_2_save, inmemoryfile)
 
-        #elif temp_dir.exists(file_2_save) == True:
-        #    if temp_dir.isempty(file_2_save) == True:
-        #        temp_dir.remove(file_2_save)
-        #        temp_dir.open(file_2_save, 'x')
-        #        temp_dir.writefile(file_2_save, inmemoryfile)
-
-            #print("__write_file_in_filesys, isfile",temp_dir.isfile(file_2_save),file_2_save)
-        #print("__write_file_in_filesys, after", temp_dir.exists(file_2_save), file_2_save)
-        #print("__write_file_in_filesys.file_2_save",file_2_save,dir.exists(file_2_save))
-
-    #print(dir.tree())
     return temp_dir
 
 
@@ -347,9 +337,8 @@ def __save_interactions_subfolders_in_filesys(dir):
             if line.find("schemas/interactions/") > 0:
                 schemas_delimiter = line.find("schemas/interactions/")
                 subfolder_name = line[schemas_delimiter + 21:delimiter_index]
-                if subfolder_name != "" and subfolder_name not in interactions_subfolders:
+                if subfolder_name != "" and subfolder_name not in interactions_subfolders and "/" not in subfolder_name:
                     interactions_subfolders.append(subfolder_name)
-                    #print("interactions_subfolders",interactions_subfolders)
                     dir.makedirs(domain_folder_name+FOLDER_INTERACTIONS+"/"+subfolder_name)
                     SubFS(MemoryFS(), domain_folder_name+FOLDER_INTERACTIONS+"/"+subfolder_name)
 
@@ -582,17 +571,21 @@ def __validate_files_in_filesys(current_domain):
     file_2_display = "generate-src-rivtabp21.bat"   # OK
     file_2_display = "crm_requeststatus_2.0.xsd"    # OK
     #file_2_display = "AB_crm_requeststatus.docx"    #read(): UnicodeDecodeError: 'utf-8' codec can't decode byte 0xa1 in position 15: invalid start byte
-    #file_2_display = "GetRequestActivitiesInteraction_2.0_RIVTABP21.wsdl"   # Filen saknas i filsystemet
+    file_2_display = "GetRequestActivitiesInteraction_2.0_RIVTABP21.wsdl"   # OK
+    file_2_display = "GetRequestActivitiesResponder_2.0.xsd"   # OK
+    #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/clinicalprocess_healthcond_description_2.1.xsd"
+    #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/itintegration_registry_1.0.xsd"
     from fs import open_fs
     global dir
     home_fs = open_fs(dir)
 
-    file_in_dir = False
     display_file_contents = False
+    file_in_dir = False
     filter = "*"    # *     *.xsd   *.doc
 
     print("\n---Validering av innehållet i det virtuella filsystemet---")
     for path in home_fs.walk.files(filter=[filter]):
+        this_dir_file = ""
         exists_in_dir = dir.exists(path)
         is_file = dir.isfile(path)
         print("  "+path, "\t\t"+str(exists_in_dir) + " " + str(is_file) + "\t(exists, isfile)")
@@ -601,17 +594,20 @@ def __validate_files_in_filesys(current_domain):
             with dir.open(path, 'r') as dir_file:
                 this_dir_file = dir_file.read()
                 if display_file_contents == True:
-                    print("\tfile contents:" + this_dir_file[0:50])
-                #__validate_xml_file(this_dir_file)
+                    print("\tfilinnehåll [0:100]:" + this_dir_file[0:100])
+        if "wsdl" in path or "xsd" in path:
+            if this_dir_file != "":
+                __validate_xml_file(this_dir_file)
     if file_in_dir == False:
         print("\nSökt fil ("+file_2_display+") saknas i filsystemet!")
     print("----------------------------------------------------------")
 
 def __validate_xml_file(xml_file):
+    print("\t--- XML-validering ska göras---")
     xmlschema_doc = etree.parse(xml_file)
-    xmlschema = etree.XMLSchema(xmlschema_doc)
-    xml_doc = etree.parse(xml_file)
-    result = xmlschema.validate(xml_doc)
+    #xmlschema = etree.XMLSchema(xmlschema_doc)
+    #xml_doc = etree.parse(xml_file)
+    #result = xmlschema.validate(xml_doc)
 
 
 ##### Execute test #####
@@ -628,6 +624,8 @@ if local_test == True:
     current_tag = "3.0.9"
     current_domain = "riv.crm.requeststatus"                                # OK
     current_tag = "2.0_RC5"
+    #current_domain = "riv.clinicalprocess.healthcond.description"
+    #current_tag = "3.0_RC1"
 
     __build_and_load_inmemory_filesystem(current_domain, current_tag)
     __validate_files_in_filesys(current_domain)
