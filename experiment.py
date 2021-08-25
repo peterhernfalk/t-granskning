@@ -29,7 +29,7 @@ local_test = True
 
 
 def __build_and_load_inmemory_filesystem(domain_name, tag):
-    #__download_from_Bitbucket(domain_name, tag)
+    #2do: explore how to get repo listing for given tag
     global link_2_repo_listing
     link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=10&tag="+tag
 
@@ -38,6 +38,12 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
 
     global domain_folder_name
     domain_folder_name = domain_name
+
+    ### test ###
+    dir_complete = __save_complete_structure_and_files_in_filesys(domain_name, link_2_repo_listing)
+    print("dir_complete:")
+    print(dir_complete.tree())
+    ### test ###
 
     global file_list
     file_list = []
@@ -115,7 +121,7 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                     print("downloaded_file, interactions", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")
                 #dir.writefile(downloaded_file, path, file_in_path)
 
-    print("\n")
+    print("dir:\n")
     print(dir.tree())
 
     #print(list(dir.scandir("/riv.clinicalprocess.activity.request")))
@@ -140,6 +146,41 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_INTERACTIONS))
     file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_TEST_SUITE))
     __print_domain_files(file_list)"""
+
+
+##############################################################################
+def __save_complete_structure_and_files_in_filesys(domain_name, document_link):
+    downloaded_requests_get = requests.get(document_link, stream=True)
+    dict_containing_json = json.loads(downloaded_requests_get.content)
+    json_dumps_dict = json.dumps(dict_containing_json['values'], indent=1)
+    rsplit_json_dumps_dict = json_dumps_dict.rsplit("\n")
+    code_gen_files = []
+    docs_files = []
+    core_components_files = []
+    interactions_files = []
+    test_suite_files = []
+
+    domain_folder = "/"+domain_name
+    dir = fs.open_fs("mem://")
+    dir.makedirs(domain_folder)
+    SubFS(MemoryFS(), domain_folder)
+
+    for line in rsplit_json_dumps_dict:
+        delimiter_index = line.rfind("/")
+        if line.find('"path') > 0:
+            #print("__test_save_structure_from_repo.line", line)
+            file_to_save = line.replace(" ", "").replace('"path":"', '').replace('",', '')
+            if line.find("/") <= 0:
+                folder_name = line.replace(" ","").replace('"path":"','').replace('",','')
+                #print("__test_save_structure_from_repo.folder_name",folder_name)
+                dir.makedirs(domain_folder+"/"+folder_name)
+                SubFS(MemoryFS(), domain_folder+"/"+folder_name)
+            else:
+                dir.makedirs(domain_folder + "/" + file_to_save)
+                SubFS(MemoryFS(), domain_folder + "/" + file_to_save)
+
+    return dir
+
 
 def __create_inmemory_file_structure(domain_folder):
     # Domain
@@ -247,7 +288,8 @@ def __get_file_list_from_repo(document_link, file_folder):
     for line in rsplit_json_dumps_dict:
         delimiter_index = line.rfind("/")
         if line.find('"path') > 0:
-            #print("__get_file_list_from_repo.interactions line", line)
+            #if file_folder == FOLDER_CODE_GEN:
+            #    print("__get_file_list_from_repo.interactions line", line)
             if line.find("pom") > 0 or line.find(".bat") > 0:
                 code_gen_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
             elif line.find(".docx") > 0:
@@ -588,7 +630,7 @@ def __validate_files_in_filesys(current_domain):
         this_dir_file = ""
         exists_in_dir = dir.exists(path)
         is_file = dir.isfile(path)
-        print("  "+path, "\t\t"+str(exists_in_dir) + " " + str(is_file) + "\t(exists, isfile)")
+        print("  ",str(exists_in_dir) + " " + str(is_file),"(exists, isfile)",path)
         if file_2_display in path:
             file_in_dir = True
             with dir.open(path, 'r') as dir_file:
@@ -624,11 +666,16 @@ if local_test == True:
     current_tag = "3.0.9"
     current_domain = "riv.crm.requeststatus"                                # OK
     current_tag = "2.0_RC5"
+    current_domain = "riv.clinicalprocess.logistics.logistics"              # OK, but should fail, because code_gen doesn't exist in the repo
+    current_tag = "2.0.4_RC1"
     #current_domain = "riv.clinicalprocess.healthcond.description"
     #current_tag = "3.0_RC1"
 
     __build_and_load_inmemory_filesystem(current_domain, current_tag)
     __validate_files_in_filesys(current_domain)
+    print("\n==================================================")
+    print("2do: explore how to get repo listing for given tag")
+    print("==================================================")
 
     #__wsdlvalidation()
     #__test_inspection_comments(globals.TKB,"REF-LINKS",404)
