@@ -10,6 +10,7 @@ from fs.subfs import SubFS
 from docx import Document
 import io
 import json
+from fs import open_fs
 
 #from fs import open_fs
 # https://stackoverflow.com/questions/51508179/how-to-construct-an-in-memory-virtual-file-system-and-then-write-this-structure
@@ -23,14 +24,21 @@ FOLDER_SCHEMAS = "/schemas"
 FOLDER_CORE_COMPONENTS = "/schemas/core_components"
 FOLDER_INTERACTIONS = "/schemas/interactions"
 FOLDER_TEST_SUITE = "/test_suite"
-global dir
+
+#global dir
+used_domain_name = ""
+used_tag = ""
 
 local_test = True
 
 
 def __build_and_load_inmemory_filesystem(domain_name, tag):
-    #2do: explore how to get repo listing for given tag
+    #2do: explore how to get repo listing for given tag, see: https://pygithub.readthedocs.io/en/latest/apis.html
+    # Doesn't use the tag: https://api.bitbucket.org/2.0/repositories/rivta-domains/riv.clinicalprocess.logistics.logistics/src/56ec8ddc62098574d936eb623fee12e253bb42f3/?tag=2.0.4_RC1&pagelen=100&max_depth=10
+    # manually added ref works: https://api.bitbucket.org/2.0/repositories/rivta-domains/riv.clinicalprocess.logistics.logistics/src/92f191f4e5379cc52c0a5e25c5d58e79b13a4251/?tag=2.0.4_RC1&pagelen=100&max_depth=10
     global link_2_repo_listing
+    global domain_hash_in_repo
+    domain_hash_in_repo = __get_domain_hash_from_repo(domain_name, tag)
     link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=10&tag="+tag
 
     global dir
@@ -39,10 +47,90 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     global domain_folder_name
     domain_folder_name = domain_name
 
+    global used_domain_name, used_tag
+    used_domain_name = domain_name
+    used_tag = tag
+
     ### test ###
+    global dir_complete
     dir_complete = __save_complete_structure_and_files_in_filesys(domain_name, link_2_repo_listing)
     print("dir_complete:")
     print(dir_complete.tree())
+    #print(list(dir_complete.scandir("/riv.clinicalprocess.logistics.logistics")))
+    ##############################
+    home_fs = open_fs(dir_complete)
+    filter = "*"
+    #display_file_contents = False
+    #file_in_dir = False
+
+    #print("\n---Visar innehållet i det virtuella filsystemet---")
+    for path in home_fs.walk.files(filter=[filter]):
+        #print("  dir_complete, path:",path)
+        """this_dir_file = ""
+        exists_in_dir = dir_complete.exists(path)
+        is_file = dir_complete.isfile(path)
+        print("  ",str(exists_in_dir) + " " + str(is_file),"(exists, isfile)",path)
+        if file_2_display in path:
+            file_in_dir = True
+            with dir_complete.open(path, 'r') as dir_file:
+                this_dir_file = dir_file.read()
+                if display_file_contents == True:
+                    print("\tfilinnehåll [0:100]:" + this_dir_file[0:100])
+        if "wsdl" in path or "xsd" in path:
+            if this_dir_file != "":
+                __validate_xml_file(this_dir_file)"""
+    ##############################
+
+    """for file_array in file_list:
+        for file in file_array:
+            if "code_gen" in file:
+                delimiter_index = file.rfind("/")
+                path = "/"+domain_name+"/"+file[0:delimiter_index]
+                file_in_path = file[delimiter_index+1:]
+                interaction_folder = ""
+                if "jaxws" in file:
+                    file_folder = FOLDER_CODE_GEN + "/jaxws"
+                elif "wcf" in file:
+                    file_folder = FOLDER_CODE_GEN + "/wcf"
+                else:
+                    file_folder = FOLDER_CODE_GEN
+                downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
+                print("downloaded file", downloaded_file, file_in_path, "\t",dir.exists("/"+domain_name+file_folder+"/"+file_in_path), "(exists)")
+                #print("pom",downloaded_file.text)
+            if "docs" in file:
+                delimiter_index = file.rfind("/")
+                path = "/"+domain_name+"/"+file[0:delimiter_index]
+                file_in_path = file[delimiter_index+1:]
+                file_page_link = __get_file_page_link(domain_name, tag, FOLDER_DOCS, file_in_path)
+                downloaded_file_page = __get_downloaded_file(file_page_link)
+                file_head_hash = __get_head_hash(downloaded_file_page)
+                file_link = __get_file_link(domain_name, tag, FOLDER_DOCS, file_in_path, file_head_hash)
+                downloaded_file = __get_downloaded_file(file_link)
+                global document
+                if downloaded_file.status_code != 404:
+                    path = "/"+domain_name+"/docs/"
+                    dir = __write_file_in_filesys(dir, path, file_in_path, downloaded_file)
+                print("downloaded_file", downloaded_file, file_in_path, "\t",dir.exists("/" + domain_name + FOLDER_DOCS + "/" + file_in_path), "(exists)")
+            if "core_components" in file or "interactions" in file:
+                #print("__build_and_load_inmemory_filesystem.file",file)
+                delimiter_index = file.rfind("/")
+                path = "/"+domain_name+"/"+file[0:delimiter_index]
+                file_in_path = file[delimiter_index+1:]
+                #print("path,file_in_path",path,file_in_path)
+                #downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, "ProcessRequestConfirmationInteraction", file_in_path)
+                interaction_folder = ""
+                if "core_components" in file:
+                    file_folder = FOLDER_CORE_COMPONENTS
+                else:
+                    schemas_delimiter = file.find("schemas/interactions/")
+                    interaction_folder = file[schemas_delimiter+21:delimiter_index]
+                    #print("interaction_folder",interaction_folder)
+                    file_folder = FOLDER_INTERACTIONS
+                downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
+                if "core_components" in path:
+                    print("downloaded_file, core", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")
+                elif "interactions" in path:
+                    print("downloaded_file, interactions", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")"""
     ### test ###
 
     global file_list
@@ -68,7 +156,7 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     ### 2do ###
 
     #global file_list
-    print(dir.tree())
+    #print(dir.tree())
     for file_array in file_list:
         for file in file_array:
             if "code_gen" in file:
@@ -149,6 +237,28 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
 
 
 ##############################################################################
+
+def __get_domain_hash_from_repo(domain_name, tag):
+    domain_hash_in_repo = ""
+    """
+        https://api.bitbucket.org/2.0/repositories/rivta-domains/riv.clinicalprocess.logistics.logistics/refs?tag=2.0.4_RC1
+        Want to find: 92f191f4e5379cc52c0a5e25c5d58e79b13a4251
+        Seems to work:
+            1. Read the page: https://api.bitbucket.org/2.0/repositories/rivta-domains/riv.clinicalprocess.logistics.logistics/refs?tag=2.0.4_RC1
+            2. Search for: '"type": "tag", "target": {"hash": "'
+            3. Immediately after that, extract the hash (example: '92f191f4e5379cc52c0a5e25c5d58e79b13a4251", ')
+                from index+35 from search
+                to '", '
+    """
+    #link_2_repo_hash_page = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=10&tag="+tag
+    link_2_repo_hash_page = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/refs?tag="+tag
+    downloaded_file = requests.get(link_2_repo_hash_page, stream=True)
+    search_index = downloaded_file.text.find('"type": "tag", "target": {"hash": "')
+    domain_hash_in_repo = downloaded_file.text[search_index+35:search_index+75]
+    #print("__get_domain_hash_from_repo",domain_hash_in_repo)
+
+    return domain_hash_in_repo
+
 def __save_complete_structure_and_files_in_filesys(domain_name, document_link):
     downloaded_requests_get = requests.get(document_link, stream=True)
     dict_containing_json = json.loads(downloaded_requests_get.content)
@@ -166,21 +276,45 @@ def __save_complete_structure_and_files_in_filesys(domain_name, document_link):
     SubFS(MemoryFS(), domain_folder)
 
     for line in rsplit_json_dumps_dict:
-        delimiter_index = line.rfind("/")
         if line.find('"path') > 0:
             #print("__test_save_structure_from_repo.line", line)
             file_to_save = line.replace(" ", "").replace('"path":"', '').replace('",', '')
-            if line.find("/") <= 0:
-                folder_name = line.replace(" ","").replace('"path":"','').replace('",','')
-                #print("__test_save_structure_from_repo.folder_name",folder_name)
-                dir.makedirs(domain_folder+"/"+folder_name)
-                SubFS(MemoryFS(), domain_folder+"/"+folder_name)
-            else:
-                dir.makedirs(domain_folder + "/" + file_to_save)
-                SubFS(MemoryFS(), domain_folder + "/" + file_to_save)
+            #print("__test_save_structure_from_repo.file_to_save", file_to_save)
+            dir.makedirs(domain_folder + "/" + file_to_save)
+            SubFS(MemoryFS(), domain_folder + "/" + file_to_save)
+            downloaded_file = __dev_get_file_from_repo(file_to_save)
+            """with dir.open(downloaded_file, 'rb', buffering =0) as inmemoryfile:
+                if dir.exists(file_to_save) == False:  # exists isempty
+                    dir.open(file_to_save, 'x')
+                    dir.writefile(file_to_save, inmemoryfile)"""
 
     return dir
 
+def __dev_get_file_from_repo(file_path):
+    global used_domain_name
+    global used_tag
+
+    downloaded_file = ""
+    folder_name = ""
+    path_to_folder_and_file = ""
+    ###file_to_download = ""
+    file_delimiter = file_path.rfind("/")
+    if file_delimiter > 0:
+        #folder_name = "/"+file_path[0:file_delimiter]
+        path_to_folder_and_file = file_path.strip()
+        print("__dev_get_file_from_repo", folder_name, path_to_folder_and_file)
+    file_page_link = __get_file_page_link(used_domain_name, used_tag, folder_name, path_to_folder_and_file)
+    print("__dev_get_file_from_repo", folder_name, path_to_folder_and_file,file_page_link)
+    #downloaded_file_page = __get_downloaded_file(file_page_link)
+    #file_head_hash = __get_head_hash(downloaded_file_page)
+    #file_link = __get_file_link(domain_name, tag, folder_name+"/"+interaction_folder+"/", file_name, file_head_hash)
+    #downloaded_file = __get_downloaded_file(file_link)
+
+    ###path = domain_name+folder_name+"/"+interaction_folder+"/"
+    ###global dir_complete
+    ###dir_complete = __write_file_in_filesys(dir_complete, path, file_name, downloaded_file)
+
+    return downloaded_file
 
 def __create_inmemory_file_structure(domain_folder):
     # Domain
@@ -617,7 +751,6 @@ def __validate_files_in_filesys(current_domain):
     file_2_display = "GetRequestActivitiesResponder_2.0.xsd"   # OK
     #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/clinicalprocess_healthcond_description_2.1.xsd"
     #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/itintegration_registry_1.0.xsd"
-    from fs import open_fs
     global dir
     home_fs = open_fs(dir)
 
