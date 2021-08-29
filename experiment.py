@@ -39,7 +39,8 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     global link_2_repo_listing
     global domain_hash_in_repo
     domain_hash_in_repo = __get_domain_hash_from_repo(domain_name, tag)
-    link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=10&tag="+tag
+    #link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=10&tag="+tag
+    link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/"+domain_hash_in_repo+"/?pagelen=100&max_depth=10&tag="+tag
 
     global dir
     dir = __create_inmemory_file_structure("/"+domain_name)
@@ -51,34 +52,23 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     used_domain_name = domain_name
     used_tag = tag
 
-    ### test ###
+    ### New compact version ###
     global dir_complete
     dir_complete = __save_complete_structure_and_files_in_filesys(domain_name, link_2_repo_listing)
     print("dir_complete:")
     print(dir_complete.tree())
+    ### New compact version ###
+
     #print(list(dir_complete.scandir("/riv.clinicalprocess.logistics.logistics")))
     ##############################
-    home_fs = open_fs(dir_complete)
-    filter = "*"
+    #home_fs = open_fs(dir_complete)
+    #filter = "*"
     #display_file_contents = False
     #file_in_dir = False
 
     #print("\n---Visar innehållet i det virtuella filsystemet---")
-    for path in home_fs.walk.files(filter=[filter]):
+    #for path in home_fs.walk.files(filter=[filter]):
         #print("  dir_complete, path:",path)
-        """this_dir_file = ""
-        exists_in_dir = dir_complete.exists(path)
-        is_file = dir_complete.isfile(path)
-        print("  ",str(exists_in_dir) + " " + str(is_file),"(exists, isfile)",path)
-        if file_2_display in path:
-            file_in_dir = True
-            with dir_complete.open(path, 'r') as dir_file:
-                this_dir_file = dir_file.read()
-                if display_file_contents == True:
-                    print("\tfilinnehåll [0:100]:" + this_dir_file[0:100])
-        if "wsdl" in path or "xsd" in path:
-            if this_dir_file != "":
-                __validate_xml_file(this_dir_file)"""
     ##############################
 
     """for file_array in file_list:
@@ -133,7 +123,8 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                     print("downloaded_file, interactions", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")"""
     ### test ###
 
-    global file_list
+    ################################################## Old, more complex version
+    """global file_list
     file_list = []
     file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_CODE_GEN))
     file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_DOCS))
@@ -210,7 +201,8 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
                 #dir.writefile(downloaded_file, path, file_in_path)
 
     print("dir:\n")
-    print(dir.tree())
+    print(dir.tree())"""
+    ##################################################
 
     #print(list(dir.scandir("/riv.clinicalprocess.activity.request")))
 
@@ -255,7 +247,7 @@ def __get_domain_hash_from_repo(domain_name, tag):
     downloaded_file = requests.get(link_2_repo_hash_page, stream=True)
     search_index = downloaded_file.text.find('"type": "tag", "target": {"hash": "')
     domain_hash_in_repo = downloaded_file.text[search_index+35:search_index+75]
-    #print("__get_domain_hash_from_repo",domain_hash_in_repo)
+    print("__get_domain_hash_from_repo",domain_hash_in_repo)
 
     return domain_hash_in_repo
 
@@ -264,11 +256,6 @@ def __save_complete_structure_and_files_in_filesys(domain_name, document_link):
     dict_containing_json = json.loads(downloaded_requests_get.content)
     json_dumps_dict = json.dumps(dict_containing_json['values'], indent=1)
     rsplit_json_dumps_dict = json_dumps_dict.rsplit("\n")
-    code_gen_files = []
-    docs_files = []
-    core_components_files = []
-    interactions_files = []
-    test_suite_files = []
 
     domain_folder = "/"+domain_name
     dir = fs.open_fs("mem://")
@@ -280,19 +267,24 @@ def __save_complete_structure_and_files_in_filesys(domain_name, document_link):
             #print("__test_save_structure_from_repo.line", line)
             file_to_save = line.replace(" ", "").replace('"path":"', '').replace('",', '')
             #print("__test_save_structure_from_repo.file_to_save", file_to_save)
-            dir.makedirs(domain_folder + "/" + file_to_save)
-            SubFS(MemoryFS(), domain_folder + "/" + file_to_save)
-            downloaded_file = __dev_get_file_from_repo(file_to_save)
-            """with dir.open(downloaded_file, 'rb', buffering =0) as inmemoryfile:
-                if dir.exists(file_to_save) == False:  # exists isempty
-                    dir.open(file_to_save, 'x')
-                    dir.writefile(file_to_save, inmemoryfile)"""
+
+            if file_to_save.find(".") <= 0:
+                # Save folder
+                dir.makedirs(domain_folder + "/" + file_to_save)
+                SubFS(MemoryFS(), domain_folder + "/" + file_to_save)
+            else:
+                # Save file
+                # 2do: fine tune this filtering of valid extensions
+                if file_to_save.find(".docx") > 0 or file_to_save.find(".pdf") > 0 \
+                        or file_to_save.find(".wsdl") > 0 or file_to_save.find(".xsd") > 0:
+                    __dev_get_and_save_file_from_repo(dir, file_to_save)
 
     return dir
 
-def __dev_get_file_from_repo(file_path):
+def __dev_get_and_save_file_from_repo(in_dir, file_path):
     global used_domain_name
     global used_tag
+    global dir_complete
 
     downloaded_file = ""
     folder_name = ""
@@ -300,21 +292,49 @@ def __dev_get_file_from_repo(file_path):
     ###file_to_download = ""
     file_delimiter = file_path.rfind("/")
     if file_delimiter > 0:
-        #folder_name = "/"+file_path[0:file_delimiter]
+        folder_name = "/"+file_path[0:file_delimiter]
         path_to_folder_and_file = file_path.strip()
-        print("__dev_get_file_from_repo", folder_name, path_to_folder_and_file)
-    file_page_link = __get_file_page_link(used_domain_name, used_tag, folder_name, path_to_folder_and_file)
-    print("__dev_get_file_from_repo", folder_name, path_to_folder_and_file,file_page_link)
-    #downloaded_file_page = __get_downloaded_file(file_page_link)
-    #file_head_hash = __get_head_hash(downloaded_file_page)
-    #file_link = __get_file_link(domain_name, tag, folder_name+"/"+interaction_folder+"/", file_name, file_head_hash)
-    #downloaded_file = __get_downloaded_file(file_link)
+    """
+    Nerladdningssidor för docs: 
+        https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/src/2.0.4_RC1/docs/AB_clinicalprocess_logistics_logistics.docx
+    Övriga filer:
+        https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/src/2.0.4_RC1/schemas/core_components/clinicalprocess_logistics_logistics_2.0.xsd
+        https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/src/2.0.4_RC1/schemas/interactions/GetCareContactsInteraction/GetCareContactsInteraction_2.0_RIVTABP21.wsdl
+        https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/src/2.0.4_RC1/schemas/interactions/GetCareContactsInteraction/GetCareContactsResponder_2.0.xsd
+    """
+    file_page_link = "https://bitbucket.org/rivta-domains/" + used_domain_name + "/src/" + used_tag + "/" + path_to_folder_and_file
 
-    ###path = domain_name+folder_name+"/"+interaction_folder+"/"
-    ###global dir_complete
-    ###dir_complete = __write_file_in_filesys(dir_complete, path, file_name, downloaded_file)
+    if path_to_folder_and_file.find(".docx") > 0:
+        print("2do: download and save docx file:",file_page_link)
+    else:
+        if len(path_to_folder_and_file.strip()) > 0:
+            downloaded_file = requests.get(file_page_link, stream=True)
+            dir_complete = __dev_write_file_in_filesys(in_dir, "/"+used_domain_name+"/"+path_to_folder_and_file, downloaded_file)
 
     return downloaded_file
+
+def __dev_write_file_in_filesys(dir, path_to_folder_and_file, downloaded_file):
+    temp_dir = dir
+    with io.BytesIO(downloaded_file.content) as inmemoryfile:
+        #file_2_save = path + file_name
+        #file_2_save = file_2_save.replace("//","/")
+        #if "interactions" in file_2_save:
+        #print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), temp_dir.isempty(file_2_save), file_2_save)
+
+
+        if temp_dir.exists(path_to_folder_and_file) == False:
+            #print("2do: __dev_write_file_in_filesys",temp_dir.exists(path_to_folder_and_file),path_to_folder_and_file)
+            temp_dir.open(path_to_folder_and_file, 'x') #fs.errors.ResourceNotFound: resource '/riv.clinicalprocess.logistics.logistics/docs/BilagaMIM_Mappningar_GetCareContacts.xlsx' not found
+            temp_dir.writefile(path_to_folder_and_file, inmemoryfile)
+
+        """if temp_dir.exists(path_to_folder_and_file) == False:   #exists isempty
+            temp_dir.open(path_to_folder_and_file, 'x')
+            temp_dir.writefile(path_to_folder_and_file, inmemoryfile)"""
+
+    return temp_dir
+
+##################################################
+################################################## Old methods
 
 def __create_inmemory_file_structure(domain_folder):
     # Domain
@@ -743,7 +763,7 @@ class InspectionComment:
     inspected_comment = ""
 
 
-def __validate_files_in_filesys(current_domain):
+def __validate_files_in_filesys(current_domain, in_dir, dir_name):
     file_2_display = "generate-src-rivtabp21.bat"   # OK
     file_2_display = "crm_requeststatus_2.0.xsd"    # OK
     #file_2_display = "AB_crm_requeststatus.docx"    #read(): UnicodeDecodeError: 'utf-8' codec can't decode byte 0xa1 in position 15: invalid start byte
@@ -751,30 +771,36 @@ def __validate_files_in_filesys(current_domain):
     file_2_display = "GetRequestActivitiesResponder_2.0.xsd"   # OK
     #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/clinicalprocess_healthcond_description_2.1.xsd"
     #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/itintegration_registry_1.0.xsd"
-    global dir
-    home_fs = open_fs(dir)
+    #global dir
+    #home_fs = open_fs(dir)
+    #global dir_complete
+    home_fs = open_fs(in_dir)
 
     display_file_contents = False
+    search_file_in_dir = False
     file_in_dir = False
     filter = "*"    # *     *.xsd   *.doc
 
-    print("\n---Validering av innehållet i det virtuella filsystemet---")
+    print("\n---Validering av innehållet i det virtuella filsystemet ("+dir_name+")---")
+    walk_count = 0
     for path in home_fs.walk.files(filter=[filter]):
         this_dir_file = ""
-        exists_in_dir = dir.exists(path)
-        is_file = dir.isfile(path)
+        exists_in_dir = in_dir.exists(path)
+        is_file = in_dir.isfile(path)
         print("  ",str(exists_in_dir) + " " + str(is_file),"(exists, isfile)",path)
+        walk_count += 1
         if file_2_display in path:
             file_in_dir = True
-            with dir.open(path, 'r') as dir_file:
+            with in_dir.open(path, 'r') as dir_file:
                 this_dir_file = dir_file.read()
                 if display_file_contents == True:
                     print("\tfilinnehåll [0:100]:" + this_dir_file[0:100])
         if "wsdl" in path or "xsd" in path:
             if this_dir_file != "":
                 __validate_xml_file(this_dir_file)
-    if file_in_dir == False:
+    if search_file_in_dir == True and file_in_dir == False:
         print("\nSökt fil ("+file_2_display+") saknas i filsystemet!")
+    print("   Antalet validerade filer i filsystemet: " + str(walk_count))
     print("----------------------------------------------------------")
 
 def __validate_xml_file(xml_file):
@@ -805,13 +831,12 @@ if local_test == True:
     #current_tag = "3.0_RC1"
 
     __build_and_load_inmemory_filesystem(current_domain, current_tag)
-    __validate_files_in_filesys(current_domain)
-    print("\n==================================================")
-    print("2do: explore how to get repo listing for given tag")
-    print("==================================================")
+    global dir
+    global dir_complete
+    __validate_files_in_filesys(current_domain, dir, "dir")
+    __validate_files_in_filesys(current_domain, dir_complete, "dir_complete")
 
     #__wsdlvalidation()
     #__test_inspection_comments(globals.TKB,"REF-LINKS",404)
 
-    global dir
     dir.close()
