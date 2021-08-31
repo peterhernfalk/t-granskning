@@ -36,14 +36,15 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     #2do: explore how to get repo listing for given tag, see: https://pygithub.readthedocs.io/en/latest/apis.html
     # Doesn't use the tag: https://api.bitbucket.org/2.0/repositories/rivta-domains/riv.clinicalprocess.logistics.logistics/src/56ec8ddc62098574d936eb623fee12e253bb42f3/?tag=2.0.4_RC1&pagelen=100&max_depth=10
     # manually added ref works: https://api.bitbucket.org/2.0/repositories/rivta-domains/riv.clinicalprocess.logistics.logistics/src/92f191f4e5379cc52c0a5e25c5d58e79b13a4251/?tag=2.0.4_RC1&pagelen=100&max_depth=10
+    # https://developer.atlassian.com/bitbucket/api/2/reference/meta/filtering
     global link_2_repo_listing
     global domain_hash_in_repo
     domain_hash_in_repo = __get_domain_hash_from_repo(domain_name, tag)
     #link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=10&tag="+tag
     link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/"+domain_hash_in_repo+"/?pagelen=100&max_depth=10&tag="+tag
 
-    global dir
-    dir = __create_inmemory_file_structure("/"+domain_name)
+    #global dir
+    #dir = __create_inmemory_file_structure("/"+domain_name)
 
     global domain_folder_name
     domain_folder_name = domain_name
@@ -70,162 +71,6 @@ def __build_and_load_inmemory_filesystem(domain_name, tag):
     #for path in home_fs.walk.files(filter=[filter]):
         #print("  dir_complete, path:",path)
     ##############################
-
-    """for file_array in file_list:
-        for file in file_array:
-            if "code_gen" in file:
-                delimiter_index = file.rfind("/")
-                path = "/"+domain_name+"/"+file[0:delimiter_index]
-                file_in_path = file[delimiter_index+1:]
-                interaction_folder = ""
-                if "jaxws" in file:
-                    file_folder = FOLDER_CODE_GEN + "/jaxws"
-                elif "wcf" in file:
-                    file_folder = FOLDER_CODE_GEN + "/wcf"
-                else:
-                    file_folder = FOLDER_CODE_GEN
-                downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
-                print("downloaded file", downloaded_file, file_in_path, "\t",dir.exists("/"+domain_name+file_folder+"/"+file_in_path), "(exists)")
-                #print("pom",downloaded_file.text)
-            if "docs" in file:
-                delimiter_index = file.rfind("/")
-                path = "/"+domain_name+"/"+file[0:delimiter_index]
-                file_in_path = file[delimiter_index+1:]
-                file_page_link = __get_file_page_link(domain_name, tag, FOLDER_DOCS, file_in_path)
-                downloaded_file_page = __get_downloaded_file(file_page_link)
-                file_head_hash = __get_head_hash(downloaded_file_page)
-                file_link = __get_file_link(domain_name, tag, FOLDER_DOCS, file_in_path, file_head_hash)
-                downloaded_file = __get_downloaded_file(file_link)
-                global document
-                if downloaded_file.status_code != 404:
-                    path = "/"+domain_name+"/docs/"
-                    dir = __write_file_in_filesys(dir, path, file_in_path, downloaded_file)
-                print("downloaded_file", downloaded_file, file_in_path, "\t",dir.exists("/" + domain_name + FOLDER_DOCS + "/" + file_in_path), "(exists)")
-            if "core_components" in file or "interactions" in file:
-                #print("__build_and_load_inmemory_filesystem.file",file)
-                delimiter_index = file.rfind("/")
-                path = "/"+domain_name+"/"+file[0:delimiter_index]
-                file_in_path = file[delimiter_index+1:]
-                #print("path,file_in_path",path,file_in_path)
-                #downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, "ProcessRequestConfirmationInteraction", file_in_path)
-                interaction_folder = ""
-                if "core_components" in file:
-                    file_folder = FOLDER_CORE_COMPONENTS
-                else:
-                    schemas_delimiter = file.find("schemas/interactions/")
-                    interaction_folder = file[schemas_delimiter+21:delimiter_index]
-                    #print("interaction_folder",interaction_folder)
-                    file_folder = FOLDER_INTERACTIONS
-                downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
-                if "core_components" in path:
-                    print("downloaded_file, core", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")
-                elif "interactions" in path:
-                    print("downloaded_file, interactions", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")"""
-    ### test ###
-
-    ################################################## Old, more complex version
-    """global file_list
-    file_list = []
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_CODE_GEN))
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_DOCS))
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_CORE_COMPONENTS))
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_INTERACTIONS))
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_TEST_SUITE))
-    __print_domain_files(file_list)
-
-    ### 2do: replace by dynamic code ###
-    #interactions_subfolders = []
-    #interactions_subfolders.append("ProcessRequestConfirmationInteraction")
-    #interactions_subfolders.append("ProcessRequestInteraction")
-    #interactions_subfolders.append("ProcessRequestOutcomeInteraction")
-    #schemas_delimiter = file.find("schemas/interactions/")
-    #interaction_folder = file[schemas_delimiter + 21:delimiter_index]
-
-    #dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
-    dir = __save_interactions_subfolders_in_filesys(dir)
-    #print(__save_interactions_subfolders_in_filesys(dir))
-    ### 2do ###
-
-    #global file_list
-    #print(dir.tree())
-    for file_array in file_list:
-        for file in file_array:
-            if "code_gen" in file:
-                delimiter_index = file.rfind("/")
-                path = "/"+domain_name+"/"+file[0:delimiter_index]
-                file_in_path = file[delimiter_index+1:]
-                interaction_folder = ""
-                if "jaxws" in file:
-                    file_folder = FOLDER_CODE_GEN + "/jaxws"
-                elif "wcf" in file:
-                    file_folder = FOLDER_CODE_GEN + "/wcf"
-                else:
-                    file_folder = FOLDER_CODE_GEN
-                downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
-                print("downloaded file", downloaded_file, file_in_path, "\t",dir.exists("/"+domain_name+file_folder+"/"+file_in_path), "(exists)")
-                #print("pom",downloaded_file.text)
-            if "docs" in file:
-                delimiter_index = file.rfind("/")
-                path = "/"+domain_name+"/"+file[0:delimiter_index]
-                file_in_path = file[delimiter_index+1:]
-                file_page_link = __get_file_page_link(domain_name, tag, FOLDER_DOCS, file_in_path)
-                downloaded_file_page = __get_downloaded_file(file_page_link)
-                file_head_hash = __get_head_hash(downloaded_file_page)
-                file_link = __get_file_link(domain_name, tag, FOLDER_DOCS, file_in_path, file_head_hash)
-                downloaded_file = __get_downloaded_file(file_link)
-                global document
-                if downloaded_file.status_code != 404:
-                    path = "/"+domain_name+"/docs/"
-                    dir = __write_file_in_filesys(dir, path, file_in_path, downloaded_file)
-                print("downloaded_file", downloaded_file, file_in_path, "\t",dir.exists("/" + domain_name + FOLDER_DOCS + "/" + file_in_path), "(exists)")
-            if "core_components" in file or "interactions" in file:
-                #print("__build_and_load_inmemory_filesystem.file",file)
-                delimiter_index = file.rfind("/")
-                path = "/"+domain_name+"/"+file[0:delimiter_index]
-                file_in_path = file[delimiter_index+1:]
-                #print("path,file_in_path",path,file_in_path)
-                #downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, "ProcessRequestConfirmationInteraction", file_in_path)
-                interaction_folder = ""
-                if "core_components" in file:
-                    file_folder = FOLDER_CORE_COMPONENTS
-                else:
-                    schemas_delimiter = file.find("schemas/interactions/")
-                    interaction_folder = file[schemas_delimiter+21:delimiter_index]
-                    #print("interaction_folder",interaction_folder)
-                    file_folder = FOLDER_INTERACTIONS
-                downloaded_file = __get_file_from_repo(dir, "/"+domain_name, tag, file_folder, interaction_folder, file_in_path)
-                if "core_components" in path:
-                    print("downloaded_file, core", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_CORE_COMPONENTS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")
-                elif "interactions" in path:
-                    print("downloaded_file, interactions", downloaded_file, file_in_path, "\t", dir.exists("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), dir.isfile("/" + domain_name + FOLDER_INTERACTIONS + "/" + interaction_folder + "/" + file_in_path), "(exists, isfile)")
-                #dir.writefile(downloaded_file, path, file_in_path)
-
-    print("dir:\n")
-    print(dir.tree())"""
-    ##################################################
-
-    #print(list(dir.scandir("/riv.clinicalprocess.activity.request")))
-
-    #os.system("ls /Users/peterhernfalk/Desktop")
-    #os.system("ls mem://riv.clinicalprocess.activity.request/docs")
-    #os.system("open -a Safari mem:///riv.clinicalprocess.activity.request/docs")
-    #os.system("open -a Safari mem://")
-
-    #dir.close()
-
-#def __download_from_Bitbucket(domain_name, tag):
-#    global link_2_repo_listing
-
-#    link_2_repo_listing = "https://api.bitbucket.org/2.0/repositories/rivta-domains/"+domain_name+"/src/?pagelen=100&max_depth=100&tag="+tag
-
-    """global file_list
-    file_list = []
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_CODE_GEN))
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_DOCS))
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_CORE_COMPONENTS))
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_INTERACTIONS))
-    file_list.append(__get_file_list_from_repo(link_2_repo_listing, FOLDER_TEST_SUITE))
-    __print_domain_files(file_list)"""
 
 
 ##############################################################################
@@ -276,7 +121,9 @@ def __save_complete_structure_and_files_in_filesys(domain_name, document_link):
                 # Save file
                 # 2do: fine tune this filtering of valid extensions
                 if file_to_save.find(".docx") > 0 or file_to_save.find(".pdf") > 0 \
-                        or file_to_save.find(".wsdl") > 0 or file_to_save.find(".xsd") > 0:
+                        or file_to_save.find(".wsdl") > 0 or file_to_save.find(".xsd") > 0\
+                        or file_to_save.find(".txt") > 0 or file_to_save.find(".xml") > 0\
+                        or file_to_save.find(".xlsx") > 0 or file_to_save.find(".md") > 0:
                     __dev_get_and_save_file_from_repo(dir, file_to_save)
 
     return dir
@@ -305,7 +152,18 @@ def __dev_get_and_save_file_from_repo(in_dir, file_path):
     file_page_link = "https://bitbucket.org/rivta-domains/" + used_domain_name + "/src/" + used_tag + "/" + path_to_folder_and_file
 
     if path_to_folder_and_file.find(".docx") > 0:
-        print("2do: download and save docx file:",file_page_link)
+        downloaded_placeholder_page = requests.get(file_page_link, stream=True)
+        # 2do, 1: download place holder file from file_page_link
+        # 2do, 2: get link to raw docx file from downloaded place holder file
+            #  https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/raw/92f191f4e5379cc52c0a5e25c5d58e79b13a4251/docs/AB_clinicalprocess_logistics_logistics.docx
+        global domain_hash_in_repo
+        file_link = "https://bitbucket.org/rivta-domains/"+used_domain_name+"/raw/"+domain_hash_in_repo+"/"+path_to_folder_and_file
+        # 2do, 3: download docx file, using the link
+        downloaded_file = requests.get(file_link, stream=True)
+        #print("2do: file to download:",file_page_link, downloaded_file.text[0:100])
+        dir_complete = __dev_write_file_in_filesys(in_dir, "/" + used_domain_name + "/" + path_to_folder_and_file, downloaded_file)
+
+        # 2do, 4: write the downloaded docx fil to filesys
     else:
         if len(path_to_folder_and_file.strip()) > 0:
             downloaded_file = requests.get(file_page_link, stream=True)
@@ -333,9 +191,167 @@ def __dev_write_file_in_filesys(dir, path_to_folder_and_file, downloaded_file):
 
     return temp_dir
 
+########## will probably be used ##########
+def __get_docx_document(downloaded_document):
+    """
+    Läser in angivet dokuments innehåll i ett docx-Document.
+
+    Returnerar: docx-Documentet
+    """
+    #print("__get_docx_document.downloaded_document",downloaded_document.content)
+    with io.BytesIO(downloaded_document.content) as inmemoryfile:
+        docx_document = Document(inmemoryfile)
+
+    return docx_document
+
+def __validate_files_in_filesys(current_domain, in_dir, dir_name):
+    file_2_display = "generate-src-rivtabp21.bat"   # OK
+    file_2_display = "crm_requeststatus_2.0.xsd"    # OK
+    #file_2_display = "AB_crm_requeststatus.docx"    #read(): UnicodeDecodeError: 'utf-8' codec can't decode byte 0xa1 in position 15: invalid start byte
+    file_2_display = "GetRequestActivitiesInteraction_2.0_RIVTABP21.wsdl"   # OK
+    file_2_display = "GetRequestActivitiesResponder_2.0.xsd"   # OK
+    #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/clinicalprocess_healthcond_description_2.1.xsd"
+    #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/itintegration_registry_1.0.xsd"
+    #file_2_display = "AB_clinicalprocess_logistics_logistics.docx"
+    #file_2_display = "GetCareContactsResponder_2.0.xsd"
+    #global dir
+    #home_fs = open_fs(dir)
+    #global dir_complete
+    home_fs = open_fs(in_dir)
+
+    display_file_contents = False
+    search_file_in_dir = False
+    file_in_dir = False
+    filter = "*"    # *     *.xsd   *.doc
+
+    print("\n---Validering av innehållet i det virtuella filsystemet ("+dir_name+")---")
+    walk_count = 0
+    for path in home_fs.walk.files(filter=[filter]):
+        this_dir_file = ""
+        exists_in_dir = in_dir.exists(path)
+        is_file = in_dir.isfile(path)
+        print("  ",str(exists_in_dir) + " " + str(is_file),"(exists, isfile)",path)
+        walk_count += 1
+        if file_2_display in path:
+            file_in_dir = True
+            with in_dir.open(path, 'r') as dir_file:
+                this_dir_file = dir_file.read()
+                if display_file_contents == True:
+                    print("\tfilinnehåll [0:100]:" + this_dir_file[0:100])
+        if "wsdl" in path or "xsd" in path:
+            if this_dir_file != "":
+                __validate_xml_file(this_dir_file)
+            ##else:
+            ##    __validate_xml_file(path)
+    if search_file_in_dir == True and file_in_dir == False:
+        print("\nSökt fil ("+file_2_display+") saknas i filsystemet!")
+    print("   Antalet validerade filer i filsystemet: " + str(walk_count))
+    print("----------------------------------------------------------")
+
+def __validate_xml_file(xml_file):
+    print("\t--- XML-validering ska göras---")
+    global dir_complete
+    with dir_complete.open(xml_file, 'r') as dir_file:
+        print(dir_file.read())
+    #print(xml_file)
+    #xmlschema_doc = etree.parse(xml_file)
+    #xmlschema = etree.XMLSchema(xmlschema_doc)
+    #xml_doc = etree.parse(xml_file)
+    #result = xmlschema.validate(xml_doc)
+
+def __wsdlvalidation():
+    #pip install lxml
+    from lxml import etree
+    global dir
+
+    wsdl = "/riv.clinicalprocess.logistics.logistics/schemas/interactions/GetCareContactsInteraction/GetCareContactsInteraction_3.0_RIVTABP21.wsdl"
+    xsd = "/riv.clinicalprocess.logistics.logistics/schemas/interactions/GetCareContactsInteraction/GetCareContactsResponder_3.0.xsd"
+
+    wsdl = "/riv.crm.requeststatus/schemas/interactions/GetRequestActivitiesInteraction/GetRequestActivitiesInteraction_2.0_RIVTABP21.wsdl"
+    xsd = "/riv.crm.requeststatus/schemas/interactions/GetRequestActivitiesInteraction/GetRequestActivitiesResponder_2.0.xsd"
+
+    xsd = "/riv.crm.requeststatus/schemas/core_components/crm_requeststatus_2.0.xsd"
+
+    #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/','r')
+    #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd','r')
+    #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'w') as tk_1_wsdl: tk_1_wsdl.write('text...')
+    #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'w') as tk_1_xsd_1: tk_1_xsd_1.write('text...')
+
+    #print(dir.isfile(('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl')))
+
+    #print("dir.exists: wsdl",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl'))
+    #print("dir.exists: xsd",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd'))
+    #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'r')
+    #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'r')
+    #print(xsd_path.read())
+
+    #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'r')
+    #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'r')
+
+    #xml_path = dir.open('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl', 'r')
+    #xsd_path = dir.open('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsResponder_2.0.xsd', 'r')
+    #print(dir.open('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl', 'r'))
+    #print(dir.open('/riv.clinicalprocess.healthcond.basic/schemas/core_components/itintegration_registry_1.0.xsd', 'r'))
+    #print("dir.isfile",dir.isfile('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl'))
+
+    #pom = "/riv.crm.requeststatus/code_gen/jaxws/pom.xml"
+    #xsd = "/riv.crm.requeststatus/schemas/core_components/crm_requeststatus_2.0.xsd"
+    #x = dir.open(pom)
+
+
+    print("wsdl, dir.exists:",dir.exists(wsdl))
+    if dir.exists(wsdl) == True:
+        print("wsdl, dir.isfile:",dir.isfile(wsdl))
+        if dir.isfile(wsdl) == True:
+            print("wsdl, dir.open:",dir.open(wsdl))
+        if dir.exists(wsdl) == True and dir.isfile(wsdl) == True:
+            print(wsdl.read())
+
+    print("xsd, dir.exists:",dir.exists(xsd))
+    if dir.exists(xsd) == True:
+        print("xsd, dir.isfile:",dir.isfile(xsd))
+        if dir.isfile(xsd) == True:
+            print("xsd, dir.open:",dir.open(xsd))
+        if dir.exists(xsd) == True and dir.isfile(xsd) == True:
+            #x = dir.open(xsd)
+            #print(x)
+            print("xsd.read()")
+            #xmlschema_doc = etree.parse(xsd)
+
+    #validate(xml_path, xsd_path)
+
+def validate(xml_path: str, xsd_path: str) -> bool:
+    print("xml_path:", xml_path)
+    print("xsd_path:", xsd_path)
+
+    #xmlschema_doc = etree.parse(xsd_path)
+    #xmlschema = etree.XMLSchema(xmlschema_doc)
+    #xml_doc = etree.parse(xml_path)
+    #result = xmlschema.validate(xml_doc)
+
+    return "result"
+
+def __test_inspection_comments(document,inspection_type,inspection_result):
+    comment = ""
+    return comment
+
+class InspectionComment:
+    """
+    Inspected_object: TKB
+    Inspection: Revision_history
+    Req: Revision_history MUST have same version as domain-tag
+    Req_exclusion: don't use version suffix in comparison
+    Inspection_comment: SVART: revisionshistoriken behöver uppdateras till granska domänversion
+    """
+    inspected_comment = ""
+
+########## END ##########
+
+
+
+##################################################
 ##################################################
 ################################################## Old methods
-
 def __create_inmemory_file_structure(domain_folder):
     # Domain
     dir = fs.open_fs("mem://")
@@ -395,25 +411,6 @@ def __write_file_in_filesys_2(dir, path, file_name, downloaded_file):
             temp_dir.open(file_2_save, 'x')
             temp_dir.writefile(file_2_save, inmemoryfile)
 
-    """with io.BytesIO(downloaded_file.content) as inmemoryfile:
-        file_2_save = path + file_name
-        file_2_save = file_2_save.replace("//","/")
-        if "interactions" in file_2_save:
-            print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), temp_dir.isempty(file_2_save), file_2_save)
-        if temp_dir.exists(file_2_save) == False:   #exists isempty
-            temp_dir.open(file_2_save, 'x')
-            temp_dir.writefile(file_2_save, inmemoryfile)"""
-
-        #elif temp_dir.exists(file_2_save) == True:
-        #    if temp_dir.isempty(file_2_save) == True:
-        #        temp_dir.remove(file_2_save)
-        #        temp_dir.open(file_2_save, 'x')
-        #        temp_dir.writefile(file_2_save, inmemoryfile)
-
-            #print("__write_file_in_filesys, isfile",temp_dir.isfile(file_2_save),file_2_save)
-        #print("__write_file_in_filesys, after", temp_dir.exists(file_2_save), file_2_save)
-        #print("__write_file_in_filesys.file_2_save",file_2_save,dir.exists(file_2_save))
-
     #print(dir.tree())
     ### 2do ###
     return temp_dir
@@ -462,16 +459,14 @@ def __get_file_list_from_repo(document_link, file_folder):
                 test_suite_files.append(line.replace(" ","").replace('"path":"','').replace('",',''))
 
     #dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
-    """
-    interactions_subfolders = []
-    interactions_subfolders.append("ProcessRequestConfirmationInteraction")
-    interactions_subfolders.append("ProcessRequestInteraction")
-    interactions_subfolders.append("ProcessRequestOutcomeInteraction")
-    #schemas_delimiter = file.find("schemas/interactions/")
-    #interaction_folder = file[schemas_delimiter + 21:delimiter_index]
+    #interactions_subfolders = []
+    #interactions_subfolders.append("ProcessRequestConfirmationInteraction")
+    #interactions_subfolders.append("ProcessRequestInteraction")
+    #interactions_subfolders.append("ProcessRequestOutcomeInteraction")
+    ##schemas_delimiter = file.find("schemas/interactions/")
+    ##interaction_folder = file[schemas_delimiter + 21:delimiter_index]
 
-    dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
-    """
+    #dir = __add_interactions_subfolders(dir,"/"+domain_name,interactions_subfolders)
 
     if file_folder == FOLDER_CODE_GEN:
         return code_gen_files
@@ -502,11 +497,11 @@ def __get_file_from_repo(in_dir, domain_name, tag, folder_name, interaction_fold
     #print("__get_file_from_repo, after", dir.exists("/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd"))
     #print("__get_file_from_repo, after", dir.exists(path+file_name),path+file_name)
 
-    """global document
-    if downloaded_file.status_code != 404:
-        if file_name.find(".docx") > -1:
-            document = __get_docx_document(downloaded_file)
-        __add_files(dir,"/"+domain_name,folder_name)"""
+    #global document
+    #if downloaded_file.status_code != 404:
+    #    if file_name.find(".docx") > -1:
+    #        document = __get_docx_document(downloaded_file)
+    #    __add_files(dir,"/"+domain_name,folder_name)
 
     return downloaded_file
 
@@ -663,152 +658,6 @@ def __get_file_link(domain_name, tag, file_folder, file_name, head_hash):
 
     return file_link
 
-def __get_docx_document(downloaded_document):
-    """
-    Läser in angivet dokuments innehåll i ett docx-Document.
-
-    Returnerar: docx-Documentet
-    """
-    #print("__get_docx_document.downloaded_document",downloaded_document.content)
-    with io.BytesIO(downloaded_document.content) as inmemoryfile:
-        docx_document = Document(inmemoryfile)
-
-
-    return docx_document
-
-def __wsdlvalidation():
-    #pip install lxml
-    from lxml import etree
-    global dir
-
-    wsdl = "/riv.clinicalprocess.logistics.logistics/schemas/interactions/GetCareContactsInteraction/GetCareContactsInteraction_3.0_RIVTABP21.wsdl"
-    xsd = "/riv.clinicalprocess.logistics.logistics/schemas/interactions/GetCareContactsInteraction/GetCareContactsResponder_3.0.xsd"
-
-    wsdl = "/riv.crm.requeststatus/schemas/interactions/GetRequestActivitiesInteraction/GetRequestActivitiesInteraction_2.0_RIVTABP21.wsdl"
-    xsd = "/riv.crm.requeststatus/schemas/interactions/GetRequestActivitiesInteraction/GetRequestActivitiesResponder_2.0.xsd"
-
-    xsd = "/riv.crm.requeststatus/schemas/core_components/crm_requeststatus_2.0.xsd"
-
-    #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/','r')
-    #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd','r')
-    #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'w') as tk_1_wsdl: tk_1_wsdl.write('text...')
-    #with dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'w') as tk_1_xsd_1: tk_1_xsd_1.write('text...')
-
-    #print(dir.isfile(('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl')))
-
-    #print("dir.exists: wsdl",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl'))
-    #print("dir.exists: xsd",dir.exists('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd'))
-    #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationInteraction_1.0_RIVTABP21.wsdl', 'r')
-    #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/interactions/ProcessRequestConfirmationInteraction/ProcessRequestConfirmationResponder_1.0.xsd', 'r')
-    #print(xsd_path.read())
-
-    #xml_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'r')
-    #xsd_path = dir.open('/riv.clinicalprocess.activity.request/schemas/core_components/clinicalprocess_activity_request_1.0.xsd', 'r')
-
-    #xml_path = dir.open('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl', 'r')
-    #xsd_path = dir.open('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsResponder_2.0.xsd', 'r')
-    #print(dir.open('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl', 'r'))
-    #print(dir.open('/riv.clinicalprocess.healthcond.basic/schemas/core_components/itintegration_registry_1.0.xsd', 'r'))
-    #print("dir.isfile",dir.isfile('/riv.clinicalprocess.healthcond.basic/schemas/interactions/GetObservationsInteraction/GetObservationsInteraction_2.0_RIVTABP21.wsdl'))
-
-    #pom = "/riv.crm.requeststatus/code_gen/jaxws/pom.xml"
-    #xsd = "/riv.crm.requeststatus/schemas/core_components/crm_requeststatus_2.0.xsd"
-    #x = dir.open(pom)
-
-
-    print("wsdl, dir.exists:",dir.exists(wsdl))
-    if dir.exists(wsdl) == True:
-        print("wsdl, dir.isfile:",dir.isfile(wsdl))
-        if dir.isfile(wsdl) == True:
-            print("wsdl, dir.open:",dir.open(wsdl))
-        if dir.exists(wsdl) == True and dir.isfile(wsdl) == True:
-            print(wsdl.read())
-
-    print("xsd, dir.exists:",dir.exists(xsd))
-    if dir.exists(xsd) == True:
-        print("xsd, dir.isfile:",dir.isfile(xsd))
-        if dir.isfile(xsd) == True:
-            print("xsd, dir.open:",dir.open(xsd))
-        if dir.exists(xsd) == True and dir.isfile(xsd) == True:
-            #x = dir.open(xsd)
-            #print(x)
-            print("xsd.read()")
-            #xmlschema_doc = etree.parse(xsd)
-
-    #validate(xml_path, xsd_path)
-
-def validate(xml_path: str, xsd_path: str) -> bool:
-    print("xml_path:", xml_path)
-    print("xsd_path:", xsd_path)
-
-    #xmlschema_doc = etree.parse(xsd_path)
-    #xmlschema = etree.XMLSchema(xmlschema_doc)
-    #xml_doc = etree.parse(xml_path)
-    #result = xmlschema.validate(xml_doc)
-
-    return "result"
-
-def __test_inspection_comments(document,inspection_type,inspection_result):
-    comment = ""
-    return comment
-
-class InspectionComment:
-    """
-    Inspected_object: TKB
-    Inspection: Revision_history
-    Req: Revision_history MUST have same version as domain-tag
-    Req_exclusion: don't use version suffix in comparison
-    Inspection_comment: SVART: revisionshistoriken behöver uppdateras till granska domänversion
-    """
-    inspected_comment = ""
-
-
-def __validate_files_in_filesys(current_domain, in_dir, dir_name):
-    file_2_display = "generate-src-rivtabp21.bat"   # OK
-    file_2_display = "crm_requeststatus_2.0.xsd"    # OK
-    #file_2_display = "AB_crm_requeststatus.docx"    #read(): UnicodeDecodeError: 'utf-8' codec can't decode byte 0xa1 in position 15: invalid start byte
-    file_2_display = "GetRequestActivitiesInteraction_2.0_RIVTABP21.wsdl"   # OK
-    file_2_display = "GetRequestActivitiesResponder_2.0.xsd"   # OK
-    #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/clinicalprocess_healthcond_description_2.1.xsd"
-    #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/itintegration_registry_1.0.xsd"
-    #global dir
-    #home_fs = open_fs(dir)
-    #global dir_complete
-    home_fs = open_fs(in_dir)
-
-    display_file_contents = False
-    search_file_in_dir = False
-    file_in_dir = False
-    filter = "*"    # *     *.xsd   *.doc
-
-    print("\n---Validering av innehållet i det virtuella filsystemet ("+dir_name+")---")
-    walk_count = 0
-    for path in home_fs.walk.files(filter=[filter]):
-        this_dir_file = ""
-        exists_in_dir = in_dir.exists(path)
-        is_file = in_dir.isfile(path)
-        print("  ",str(exists_in_dir) + " " + str(is_file),"(exists, isfile)",path)
-        walk_count += 1
-        if file_2_display in path:
-            file_in_dir = True
-            with in_dir.open(path, 'r') as dir_file:
-                this_dir_file = dir_file.read()
-                if display_file_contents == True:
-                    print("\tfilinnehåll [0:100]:" + this_dir_file[0:100])
-        if "wsdl" in path or "xsd" in path:
-            if this_dir_file != "":
-                __validate_xml_file(this_dir_file)
-    if search_file_in_dir == True and file_in_dir == False:
-        print("\nSökt fil ("+file_2_display+") saknas i filsystemet!")
-    print("   Antalet validerade filer i filsystemet: " + str(walk_count))
-    print("----------------------------------------------------------")
-
-def __validate_xml_file(xml_file):
-    print("\t--- XML-validering ska göras---")
-    xmlschema_doc = etree.parse(xml_file)
-    #xmlschema = etree.XMLSchema(xmlschema_doc)
-    #xml_doc = etree.parse(xml_file)
-    #result = xmlschema.validate(xml_doc)
 
 
 ##### Execute test #####
@@ -833,10 +682,10 @@ if local_test == True:
     __build_and_load_inmemory_filesystem(current_domain, current_tag)
     global dir
     global dir_complete
-    __validate_files_in_filesys(current_domain, dir, "dir")
+    #__validate_files_in_filesys(current_domain, dir, "dir")
     __validate_files_in_filesys(current_domain, dir_complete, "dir_complete")
 
     #__wsdlvalidation()
     #__test_inspection_comments(globals.TKB,"REF-LINKS",404)
 
-    dir.close()
+    dir_complete.close()
