@@ -135,36 +135,46 @@ def __dev_get_and_save_file_from_repo(in_dir, file_path):
     global domain_hash_in_repo
 
     downloaded_file = ""
+    #file_name = ""
     path_to_folder_and_file = ""
     file_delimiter = file_path.rfind("/")
     if file_delimiter > 0:
         path_to_folder_and_file = file_path.strip()
+        #file_name = file_path[file_delimiter+1:]
 
     #file_page_link = "https://bitbucket.org/rivta-domains/" + used_domain_name + "/src/" + used_tag + "/" + path_to_folder_and_file
     file_link = "https://bitbucket.org/rivta-domains/"+used_domain_name+"/raw/"+domain_hash_in_repo+"/"+path_to_folder_and_file
     downloaded_file = requests.get(file_link, stream=True)
-    dir_complete = __dev_write_file_in_filesys(in_dir, "/" + used_domain_name + "/" + path_to_folder_and_file, downloaded_file)
-    #print("__dev_get_and_save_file_from_repo, file_link",file_link)
+    #print("__dev_get_and_save_file_from_repo", downloaded_file.status_code, file_link)
+    global document
+    if downloaded_file.status_code != 404:
+        if path_to_folder_and_file.find(".docx") > -1:
+            document = __get_docx_document(downloaded_file)
+            #for paragraph in document.paragraphs:
+                #print(paragraph.text)
+            dir_complete = __dev_write_file_in_filesys(in_dir, "/" + used_domain_name + "/" + path_to_folder_and_file, document)
+        else:
+            #downloaded_file = __get_docx_document(downloaded_file)
+            #print(document)
+            dir_complete = __dev_write_file_in_filesys(in_dir, "/" + used_domain_name + "/" + path_to_folder_and_file, downloaded_file)
 
     return downloaded_file
 
 def __dev_write_file_in_filesys(dir, path_to_folder_and_file, downloaded_file):
     temp_dir = dir
-    with io.BytesIO(downloaded_file.content) as inmemoryfile:
-        #file_2_save = path + file_name
-        #file_2_save = file_2_save.replace("//","/")
-        #if "interactions" in file_2_save:
-        #print("__write_file_in_filesys, before", temp_dir.exists(file_2_save), temp_dir.isempty(file_2_save), file_2_save)
-
-
-        if temp_dir.exists(path_to_folder_and_file) == False:
-            #print("2do: __dev_write_file_in_filesys",temp_dir.exists(path_to_folder_and_file),path_to_folder_and_file)
-            temp_dir.open(path_to_folder_and_file, 'x') #fs.errors.ResourceNotFound: resource '/riv.clinicalprocess.logistics.logistics/docs/BilagaMIM_Mappningar_GetCareContacts.xlsx' not found
-            temp_dir.writefile(path_to_folder_and_file, inmemoryfile)
-
-        """if temp_dir.exists(path_to_folder_and_file) == False:   #exists isempty
-            temp_dir.open(path_to_folder_and_file, 'x')
-            temp_dir.writefile(path_to_folder_and_file, inmemoryfile)"""
+    if path_to_folder_and_file.find(".docx") > 0:
+        #print("__dev_write_file_in_filesys", downloaded_file.paragraphs)
+        print("__dev_write_file_in_filesys, 2do: writefile: ", path_to_folder_and_file)
+        # with temp_dir.open(downloaded_file, 'rb', buffering=0) as inmemoryfile:
+        """with io.BytesIO(downloaded_file.content) as inmemoryfile:
+            if temp_dir.exists(path_to_folder_and_file) == False:
+                temp_dir.open(path_to_folder_and_file, 'x')
+                temp_dir.writefile(path_to_folder_and_file, inmemoryfile)"""
+    else:
+        with io.BytesIO(downloaded_file.content) as inmemoryfile:
+            if temp_dir.exists(path_to_folder_and_file) == False:
+                temp_dir.open(path_to_folder_and_file, 'x')
+                temp_dir.writefile(path_to_folder_and_file, inmemoryfile)
 
     return temp_dir
 
@@ -190,14 +200,15 @@ def __validate_files_in_filesys(current_domain, in_dir, dir_name):
     #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/clinicalprocess_healthcond_description_2.1.xsd"
     #file_2_display = "/riv.clinicalprocess.healthcond.description/schemas/core_components/itintegration_registry_1.0.xsd"
     #file_2_display = "AB_clinicalprocess_logistics_logistics.docx"
-    file_2_display = "GetCareContactsResponder_2.0.xsd"
+    file_2_display = "GetCareContactsResponder_2.0.xsd"     # OK
+    #file_2_display = "AB_clinicalprocess_logistics_logistics.docx"     # UnicodeDecodeError: 'utf-8' codec can't decode byte 0xa1 in position 15: invalid start byte
     #global dir
     #home_fs = open_fs(dir)
     #global dir_complete
     home_fs = open_fs(in_dir)
 
-    display_file_contents = True
-    search_file_in_dir = True
+    display_file_contents = False
+    search_file_in_dir = False
     file_in_dir = False
     filter = "*"    # *     *.xsd   *.doc
 
@@ -217,7 +228,7 @@ def __validate_files_in_filesys(current_domain, in_dir, dir_name):
                     print("\tfilinnehåll [0:100]:" + this_dir_file[0:100])
         if "wsdl" in path or "xsd" in path:
             if this_dir_file != "":
-                __validate_xml_file(this_dir_file)
+                __validate_xml_file(this_dir_file,path)
             ##else:
             ##    __validate_xml_file(path)
     if search_file_in_dir == True and file_in_dir == False:
@@ -225,14 +236,14 @@ def __validate_files_in_filesys(current_domain, in_dir, dir_name):
     print("   Antalet validerade filer i filsystemet: " + str(walk_count))
     print("----------------------------------------------------------")
 
-def __validate_xml_file(xml_file):
+def __validate_xml_file(xml_file,path):
     print("\t--- XML-validering ska göras---")
-    print(xml_file)
-    ##global dir_complete
-    ##with dir_complete.open(xml_file, 'r') as dir_file:
-    ##    print(dir_file.read())
-    #print(xml_file)
-    #xmlschema_doc = etree.parse(xml_file)
+    #print(path,"\n",xml_file)
+    global dir_complete
+    xml_path = dir_complete.open(path, 'r')
+
+    xmlschema_doc = etree.parse(xml_path)
+    print("xmlschema_doc",etree.tostring(xmlschema_doc.getroot()))
     #xmlschema = etree.XMLSchema(xmlschema_doc)
     #xml_doc = etree.parse(xml_file)
     #result = xmlschema.validate(xml_doc)
