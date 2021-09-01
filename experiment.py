@@ -132,48 +132,19 @@ def __dev_get_and_save_file_from_repo(in_dir, file_path):
     global used_domain_name
     global used_tag
     global dir_complete
-
-    downloaded_file = ""
-    folder_name = ""
-    path_to_folder_and_file = ""
-    ###file_to_download = ""
-    file_delimiter = file_path.rfind("/")
-    if file_delimiter > 0:
-        folder_name = "/"+file_path[0:file_delimiter]
-        path_to_folder_and_file = file_path.strip()
-    """
-    Nerladdningssidor för docs: 
-        https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/src/2.0.4_RC1/docs/AB_clinicalprocess_logistics_logistics.docx
-    Övriga filer:
-        https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/src/2.0.4_RC1/schemas/core_components/clinicalprocess_logistics_logistics_2.0.xsd
-        https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/src/2.0.4_RC1/schemas/interactions/GetCareContactsInteraction/GetCareContactsInteraction_2.0_RIVTABP21.wsdl
-        https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/src/2.0.4_RC1/schemas/interactions/GetCareContactsInteraction/GetCareContactsResponder_2.0.xsd
-    """
-    file_page_link = "https://bitbucket.org/rivta-domains/" + used_domain_name + "/src/" + used_tag + "/" + path_to_folder_and_file
     global domain_hash_in_repo
 
-    if path_to_folder_and_file.find(".docx") > 0:
-        downloaded_placeholder_page = requests.get(file_page_link, stream=True)
-        # 2do, 1: download place holder file from file_page_link
-        # 2do, 2: get link to raw docx file from downloaded place holder file
-            #  https://bitbucket.org/rivta-domains/riv.clinicalprocess.logistics.logistics/raw/92f191f4e5379cc52c0a5e25c5d58e79b13a4251/docs/AB_clinicalprocess_logistics_logistics.docx
-        global domain_hash_in_repo
-        file_link = "https://bitbucket.org/rivta-domains/"+used_domain_name+"/raw/"+domain_hash_in_repo+"/"+path_to_folder_and_file
-        print("__dev_get_and_save_file_from_repo, file_link",file_link)
-        # 2do, 3: download docx file, using the link
-        downloaded_file = requests.get(file_link, stream=True)
-        #print("2do: file to download:",file_page_link, downloaded_file.text[0:100])
-        # 2do, 4: write the downloaded docx fil to filesys
-        dir_complete = __dev_write_file_in_filesys(in_dir, "/" + used_domain_name + "/" + path_to_folder_and_file, downloaded_file)
-    else:
-        if len(path_to_folder_and_file.strip()) > 0:
-            ##downloaded_file = requests.get(file_page_link, stream=True)
-            ##dir_complete = __dev_write_file_in_filesys(in_dir, "/"+used_domain_name+"/"+path_to_folder_and_file, downloaded_file)
-            downloaded_placeholder_page = requests.get(file_page_link, stream=True)
-            file_link = "https://bitbucket.org/rivta-domains/" + used_domain_name + "/raw/" + domain_hash_in_repo + "/" + path_to_folder_and_file
-            print("__dev_get_and_save_file_from_repo, file_link", file_link)
-            downloaded_file = requests.get(file_link, stream=True)
-            dir_complete = __dev_write_file_in_filesys(in_dir, "/" + used_domain_name + "/" + path_to_folder_and_file, downloaded_file)
+    downloaded_file = ""
+    path_to_folder_and_file = ""
+    file_delimiter = file_path.rfind("/")
+    if file_delimiter > 0:
+        path_to_folder_and_file = file_path.strip()
+
+    #file_page_link = "https://bitbucket.org/rivta-domains/" + used_domain_name + "/src/" + used_tag + "/" + path_to_folder_and_file
+    file_link = "https://bitbucket.org/rivta-domains/"+used_domain_name+"/raw/"+domain_hash_in_repo+"/"+path_to_folder_and_file
+    downloaded_file = requests.get(file_link, stream=True)
+    dir_complete = __dev_write_file_in_filesys(in_dir, "/" + used_domain_name + "/" + path_to_folder_and_file, downloaded_file)
+    #print("__dev_get_and_save_file_from_repo, file_link",file_link)
 
     return downloaded_file
 
