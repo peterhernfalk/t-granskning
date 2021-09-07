@@ -104,6 +104,10 @@ def verify_url_exists(searched_url):
         status_code = 400  # http status code, meaning bad request
     except MissingSchema:
         status_code = 400   # http status code, meaning bad request
+    except requests.exceptions.InvalidSchema:
+        status_code = 400   # http status code, meaning bad request
+    #else:
+    #    status_code = 400  # http status code, meaning bad request
     return status_code
 
 if local_test == True:

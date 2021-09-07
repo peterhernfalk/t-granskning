@@ -1,6 +1,8 @@
 #import os
+import parser
 
 from lxml import etree
+from lxml.etree import XMLSchemaParseError, DocumentInvalid
 
 import globals
 import fs
@@ -227,8 +229,9 @@ def __validate_files_in_filesys(current_domain, in_dir, dir_name):
                 if display_file_contents == True:
                     print("\tfilinnehåll [0:100]:" + this_dir_file[0:100])
         if "wsdl" in path or "xsd" in path:
-            if this_dir_file != "":
-                __validate_xml_file(this_dir_file,path)
+            __validate_xml_file(this_dir_file, path)
+            #if this_dir_file != "":
+            #    __validate_xml_file(this_dir_file,path)
             ##else:
             ##    __validate_xml_file(path)
     if search_file_in_dir == True and file_in_dir == False:
@@ -237,16 +240,30 @@ def __validate_files_in_filesys(current_domain, in_dir, dir_name):
     print("----------------------------------------------------------")
 
 def __validate_xml_file(xml_file,path):
-    print("\t--- XML-validering ska göras---")
+    #print("\t--- XML-validering ska göras---")
     #print(path,"\n",xml_file)
     global dir_complete
-    xml_path = dir_complete.open(path, 'r')
+    xml_path = dir_complete.open(path, 'r', encoding='utf-8')
 
-    xmlschema_doc = etree.parse(xml_path)
-    print("xmlschema_doc",etree.tostring(xmlschema_doc.getroot()))
-    #xmlschema = etree.XMLSchema(xmlschema_doc)
-    #xml_doc = etree.parse(xml_file)
-    #result = xmlschema.validate(xml_doc)
+    #with dir_complete.open(path, 'r', encoding='utf-8') as f:
+    #    doc = etree.parse(f)
+    #    print("doc\n",doc)
+
+    try:
+        xmlschema_doc = etree.parse(xml_path)
+        #print("xmlschema_doc",etree.tostring(xmlschema_doc.getroot()))
+        xmlschema = etree.XMLSchema(xmlschema_doc)
+        xmlschema.assertValid(xmlschema_doc)
+
+        xml_doc = etree.parse(xml_file)
+        result = xmlschema.validate(xml_doc)
+        print("\t\tValid file:", path)
+    except XMLSchemaParseError:
+        print("\t\tXMLSchemaParseError for:", path)
+    except OSError:
+        print("\t\tOSError for:", path)
+    except DocumentInvalid:
+        print("\t\tDocumentInvalid for:", path)
 
 def __wsdlvalidation():
     #pip install lxml
