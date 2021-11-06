@@ -6,6 +6,7 @@ import datetime
 
 import DOCX_display_document_contents
 #import html_dashboard
+import globals
 from DOCX_display_document_contents import *
 import docx
 from docx.table import *
@@ -86,8 +87,8 @@ def prepare_TKB_inspection(domain, tag, alt_document_name):
 
     TKB_document_paragraphs = ""
 
-    TKB_head_hash = document_mangagement.DOC_get_head_hash(downloaded_TKB_page)
-    TKB_document_link = document_mangagement.DOC_get_document_link(domain, tag, globals.TKB, TKB_head_hash, alt_document_name)
+    globals.head_hash = document_mangagement.DOC_get_head_hash(downloaded_TKB_page)
+    TKB_document_link = document_mangagement.DOC_get_document_link(domain, tag, globals.TKB, globals.head_hash, alt_document_name)
     downloaded_TKB_document = document_mangagement.DOC_get_downloaded_document(TKB_document_link)
     if downloaded_TKB_document.status_code == 404:
         ###TKB_document_paragraphs = APP_text_document_not_found(globals.TKB, domain, tag)
