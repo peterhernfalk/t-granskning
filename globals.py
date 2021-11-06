@@ -49,7 +49,7 @@ TKB_antal_brister_revisionshistorik = 0
 TKB_detail_box_contents = ""
 TKB_document_exists = False
 TKB_document_name = ""
-TKB_exists = False
+#TKB_exists = False
 XML_detail_box_contents = ""
 
 
@@ -91,7 +91,7 @@ def GLOBALS_init():
     global TKB_detail_box_contents
     global TKB_document_exists
     global TKB_document_name
-    global TKB_exists
+    #global TKB_exists
     global XML_detail_box_contents
 
     AB_antal_arkitekturbeslut = 0
@@ -130,7 +130,7 @@ def GLOBALS_init():
     TKB_detail_box_contents = ""
     TKB_document_exists = False
     TKB_document_name = ""
-    TKB_exists = False
+    #TKB_exists = False
     XML_detail_box_contents = ""
 
 

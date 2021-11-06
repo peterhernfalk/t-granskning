@@ -87,14 +87,14 @@ def reponse2request():
         #__inspect_IS_document(domain, tag, alt_IS_name)
         ##globals.docx_document = globals.IS
         ##globals.alt_document_name = alt_IS_name
-        ##granskning_IS.perform_IS_inspection(domain, tag, alt_AB_name)
+        ##granskning_IS.perform_IS_inspection(domain, tag, alt_IS_name)
         ###################################
 
         #globals.docx_document = globals.TKB
         #__inspect_TKB_document(domain, tag, alt_TKB_name)
         globals.docx_document = globals.TKB
         globals.alt_document_name = alt_TKB_name
-        granskning_TKB.perform_TKB_inspection(domain, tag, alt_AB_name)
+        granskning_TKB.perform_TKB_inspection(domain, tag, alt_TKB_name)
 
         globals.docx_document = globals.AB
         globals.alt_document_name = alt_AB_name

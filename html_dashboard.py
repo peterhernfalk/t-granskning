@@ -1,16 +1,29 @@
-import app
-import globals
+#import app
+#import globals
+import granskning_AB
+#import granskning_IS
+import granskning_TKB
 import repo
 from repo import *
 
+AB_antal_brister = 0
+#IS_antal_brister = 0
+TKB_antal_brister = 0
+
 
 def get_page_html():
+    global AB_antal_brister
+    AB_antal_brister = 0
+    global IS_antal_brister
+    IS_antal_brister = 0
+    global TKB_antal_brister
+    TKB_antal_brister = 0
+
     html = __html_start() + __html_head() + __html_body_start() + __html_sidebar() + __html_overview_start(globals.domain_name, globals.tag)
-    #html += __html_summary_infospec() + __html_summary_TKB() + __html_section_end()
-    #html += __html_summary_documents() + __html_summary_TKB() + __html_section_end()
     html += __html_summary_documents() + __html_summary_SCHEMAS() + __html_section_end()
 
-    html += __html_detail_section_begin("Infospec")
+    #html += __html_detail_section_begin("Infospec")
+    html += __html_detail_section_begin("TKB")
     #html += __html_recent_inspection_box_begin("Infospec-granskning") + globals.IS_detail_box_contents + __html_recent_inspection_box_end()
 
     html += __html_detail_box_begin_TKB() + globals.TKB_detail_box_contents + __box_content_end()
@@ -312,12 +325,6 @@ def __html_sidebar():
             <span class="links_name"><b>Innehåll</b></span>
           </a>
         </li>
-        <!--li>
-          <a href="#Infospec">
-            <i></i>
-            <span class="links_name">Infospec-granskning</span>
-          </a>
-        </li-->
         <li>
           <a href="#TKB">
             <i></i>
@@ -403,7 +410,7 @@ def __html_summary_documents():
     html += '''
         <div class="box-topic">Sammanfattning: TKB</div>
     '''
-    if globals.TKB_exists == True:
+    if granskning_TKB.TKB_exists == True:
         html += __get_TKB_summary()
     else:
         html += __text_document_not_found(globals.TKB, globals.domain_name, globals.tag)
@@ -412,7 +419,7 @@ def __html_summary_documents():
         <br><div class="box-topic">Sammanfattning: AB</div>
     '''
 
-    if globals.AB_exists == True:
+    if granskning_AB.AB_exists == True:
         html += __get_AB_summary()
     else:
         html += __text_document_not_found(globals.AB, globals.domain_name, globals.tag)
@@ -431,21 +438,25 @@ def __html_summary_SCHEMAS():
     <div>
     <div class="box-topic">Sammanfattning: RIVTA-verifiering</div>
     '''
+    html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
     html += "<div><li>There were <b>0</b> errors and <b>0</b> warnings.</li></div>"
 
 
     html += '''
         <br><div class="box-topic">Sammanfattning: XML-validering</div>
     '''
+    html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
     html += "<div><li><b>Valid</b> WSDL</li></div>"
 
     html += '''
         <br><div class="box-topic">Sammanfattning: versionskompatibilitet</div>
     '''
+    html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
     html += "<div><li>Denna domänversion är <b>kompatibel</b> med förra domänversionen</li></div>"
 
     html += '''
         <br><div class="box-topic">Sammanfattning: granskningskommentarer</div>
+        <div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>
         <div><li><b>0  &nbsp</b>förslag till granskningskommentarer</div></li>
     '''
 
@@ -487,9 +498,10 @@ def __text_document_not_found(doc, domain, tag):
 
     Returenar: information i html-format
     """
-    document_name = "Infospec"
-    if doc == globals.TKB:
-        document_name = globals.TKB
+    #document_name = "Infospec"
+    #if doc == globals.TKB:
+    #    document_name = globals.TKB
+    document_name = doc
 
     document_info = globals.HTML_2_SPACES
     document_info += document_name + " saknas eller har annat namn än det förväntade: <i><br>" + globals.HTML_2_SPACES + globals.HTML_2_SPACES + doc.upper() + "_" + domain.replace(
@@ -555,13 +567,39 @@ def __html_summary_TKB():
 
 
 def __get_TKB_summary():
-    html = ""
+    """html = ""
     if globals.TKB_antal_brister_revisionshistorik == 0:
         html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
     else:
         html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
     html += "<div><li><b>" + str(
         globals.TKB_antal_brister_referenslänkar) + " &nbsp</b>felaktiga länkar i referenstabellen</li></div>"
+    """
+    global TKB_antal_brister
+    html = ""
+    if granskning_TKB.TKB_antal_brister_revisionshistorik == 0:
+        html += "<div><li>Revisionshistoriken har <b>korrekt</b> version angiven</li></div>"
+    else:
+        html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
+        TKB_antal_brister += 1
+    html += "<div><li><b>" + str(
+        granskning_TKB.TKB_antal_brister_tomma_revisionshistoriktabellceller) + " &nbsp;</b>tomma celler i revisionshistoriken</li></div>"
+    TKB_antal_brister += granskning_TKB.TKB_antal_brister_tomma_revisionshistoriktabellceller
+    html += "<br>"
+    html += "<div><li><b>" + str(
+        granskning_TKB.TKB_antal_brister_referenslänkar) + " &nbsp;</b>felaktiga länkar i referenstabellen</li></div>"
+    TKB_antal_brister += granskning_TKB.TKB_antal_brister_referenslänkar
+    html += "<div><li><b>" + str(
+        granskning_TKB.TKB_antal_brister_tomma_referenstabellceller) + " &nbsp;</b>tomma celler i referenstabellen</li></div>"
+    TKB_antal_brister += granskning_TKB.TKB_antal_brister_tomma_referenstabellceller
+    html += "<br>"
+    if granskning_TKB.TKB_meddelandemodeller_finns == True:
+        html += "<div><li>Meddelandemodeller <b>finns</b></li></div>"
+    else:
+        html += "<div><li>Meddelandemodeller <b>saknas</b></li></div>"
+        TKB_antal_brister += 1
+    html += "<br>"
+    html += "<b>" + str(TKB_antal_brister) + " &nbsp;brister i TKB</b> upptäckta av automatiserad granskning<br>"
 
     return html
 
@@ -588,7 +626,7 @@ def __html_summary_AB():
 
 
 def __get_AB_summary():
-    html = ""
+    """html = ""
     #html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
     if globals.AB_antal_brister_revisionshistorik == 0:
         html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
@@ -599,6 +637,24 @@ def __get_AB_summary():
         html += "<div><li>Arkitekturbeslut <b>finns</b></li></div>"
     else:
         html += "<div><li>Arkitekturbeslut <b>behöver kollas</b> (saknas eller har fel format)</li></div>"
+    """
+    global AB_antal_brister
+    html = ""
+    if granskning_AB.AB_antal_brister_revisionshistorik == 0:
+        html += "<div><li>Revisionshistoriken har <b>korrekt</b> version angiven</li></div>"
+    else:
+        html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
+        AB_antal_brister += 1
+    html += "<div><li><b>" + str(granskning_AB.AB_antal_brister_tomma_revisionshistoriktabellceller) + " &nbsp;</b>tomma celler i revisionshistoriken</li></div>"
+    AB_antal_brister += granskning_AB.AB_antal_brister_tomma_revisionshistoriktabellceller
+
+    #html += "<br>"
+    html += "<div><li><b>" + str(granskning_AB.AB_antal_brister_referenslänkar) + " &nbsp;</b>felaktiga länkar i referenstabellen</li></div>"
+    AB_antal_brister += granskning_AB.AB_antal_brister_referenslänkar
+
+    html += "<div><li><b>" + str(granskning_AB.AB_antal_brister_tomma_referenstabellceller) + " &nbsp;</b>tomma celler i referenstabellen</li></div>"
+    AB_antal_brister += granskning_AB.AB_antal_brister_tomma_referenstabellceller
+    html += "<br><b>" + str(AB_antal_brister) + " &nbsp;brister i AB</b> upptäckta av automatiserad granskning<br>"
 
     return html
 
