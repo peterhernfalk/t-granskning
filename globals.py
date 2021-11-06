@@ -1,4 +1,11 @@
 
+### From I-granskning ###
+DISPLAY_TYPE_TABLE = "display_type_table"
+DISPLAY_TYPE_TEXT = "display_type_text"
+TABLE_NUM_REVISION = 1   #Hard coded, assuming that the reference table is number 1 in the document
+TABLE_NUM_REF = 2   #Hard coded, assuming that the reference table is number 2 in the document
+########################
+
 AB = "AB"
 AB_antal_arkitekturbeslut = 0
 AB_antal_brister_revisionshistorik = 0
@@ -6,8 +13,11 @@ AB_detail_box_contents = ""
 AB_document_exists = False
 AB_document_name = ""
 AB_exists = False
+alt_document_name = ""
 COMMENTS_detail_box_contents = ""
 COMPATIBILITY_detail_box_contents = ""
+
+
 docx_document = ""
 docx_IS_document = ""
 docx_TKB_document = ""
@@ -43,6 +53,7 @@ TKB_exists = False
 XML_detail_box_contents = ""
 
 
+
 def GLOBALS_init():
     global AB_antal_arkitekturbeslut
     global AB_antal_brister_revisionshistorik
@@ -50,6 +61,7 @@ def GLOBALS_init():
     global AB_document_exists
     global AB_document_name
     global AB_exists
+    global alt_document_name
     global COMMENTS_detail_box_contents
     global COMPATIBILITY_detail_box_contents
     global docx_document
@@ -88,6 +100,7 @@ def GLOBALS_init():
     AB_document_exists = False
     AB_document_name = ""
     AB_exists = False
+    alt_document_name = ""
     COMMENTS_detail_box_contents = ""
     COMPATIBILITY_detail_box_contents = ""
     docx_document = ""

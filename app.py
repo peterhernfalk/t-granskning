@@ -1,16 +1,17 @@
 
-from docx import Document
-from flask import Flask, request    # jsonify
+from flask import Flask, request
 from flask_cors import CORS
-
+import granskning_AB
+import granskning_IS
+import granskning_TKB
 import html_dashboard
-from html_dashboard import *
-
-import globals
 from INFO_inspection_information import *
 import io
 from repo import *
 import requests
+#from docx import Document
+#from html_dashboard import *
+#import globals
 
 ##############################
 # Startup settings
@@ -42,7 +43,7 @@ def emptyrequest():
     html = "<br><h1>Webbadressen är inte korrekt!</h1>"
     html += "<br>Någon av de obligatoriska url-parametrarna <i>domain</i> eller <i>tag</i> <b>saknas i anropet!</b>"
     html += "<br><br>Ange dem i adressraden enligt följande format: <i>url...</i><b>/granskningsinfo?domain=</b><i>[domännamn utan riv-prefix]</i><b>&tag=</b><i>[tag]</i>"
-    html += "<br><br>Exempelvis: <i><a href='https://i-granskning.herokuapp.com/granskningsinfo?domain=clinicalprocess.healthcond.certificate&tag=4.0.5'>https://i-granskning.herokuapp.com/granskningsinfo?domain=clinicalprocess.healthcond.certificate&tag=4.0.5</a></i>"
+    html += "<br><br>Exempelvis: <i><a href='https://t-granskning.herokuapp.com/granskningsinfo?domain=clinicalprocess.healthcond.certificate&tag=4.0.5'>https://t-granskning.herokuapp.com/granskningsinfo?domain=clinicalprocess.healthcond.certificate&tag=4.0.5</a></i>"
 
     ##### REPLY #####
     return html
@@ -68,9 +69,9 @@ def reponse2request():
     domain_prefix_param = request.args.get('domainprefix', default="")
     tag = request.args.get('tag', default="")
     globals.tag = tag
+    alt_AB_name = request.args.get('ab', default="")
     alt_IS_name = request.args.get('is', default="")
     alt_TKB_name = request.args.get('tkb', default="")
-    alt_AB_name = request.args.get('ab', default="")
 
     if domain != "" and tag != "":
         if domain_prefix_param.strip() != "":
@@ -81,21 +82,32 @@ def reponse2request():
             globals.domain_prefix = "riv."
 
         ##### INSPECT #####
-        globals.docx_document = globals.IS
-        __inspect_IS_document(domain, tag, alt_IS_name)
+        # Not necessary for T-inspections #
+        #globals.docx_document = globals.IS
+        #__inspect_IS_document(domain, tag, alt_IS_name)
+        ##globals.docx_document = globals.IS
+        ##globals.alt_document_name = alt_IS_name
+        ##granskning_IS.perform_IS_inspection(domain, tag, alt_AB_name)
+        ###################################
 
+        #globals.docx_document = globals.TKB
+        #__inspect_TKB_document(domain, tag, alt_TKB_name)
         globals.docx_document = globals.TKB
-        __inspect_TKB_document(domain, tag, alt_TKB_name)
+        globals.alt_document_name = alt_TKB_name
+        granskning_TKB.perform_TKB_inspection(domain, tag, alt_AB_name)
 
         globals.docx_document = globals.AB
-        __inspect_AB_document(domain, tag, alt_AB_name)
+        globals.alt_document_name = alt_AB_name
+        #__inspect_AB_document(domain, tag, alt_AB_name)
+        granskning_AB.perform_AB_inspection(domain, tag, alt_AB_name)   # module 'DOCX_display_document_contents' has no attribute 'DOCX_get_tableno_for_paragraph_title'
 
-        #html = __get_html_response(riv_domain, IS_page_link, TKB_page_link, IS_document_paragraphs, TKB_document_paragraphs)
+        ##### CREATE HTML #####
         html = html_dashboard.get_page_html()
     else:
         html = "<br><h1>Webbadressen är inte korrekt!</h1>"
         html += "<br>Någon av de obligatoriska url-parametrarna <i>domain</i> eller <i>tag</i> <b>saknas i anropet!</b>"
         html += "<br><br>Ange dem i adressraden enligt följande format: <i>url...</i><b>/granskningsinfo?domain=</b><i>[domännamn utan riv-prefix]</i><b>&tag=</b><i>[tag]</i>"
+        #html = emptyrequest()  I-granskning
 
     ##### REPLY #####
     return html
@@ -139,7 +151,7 @@ def __inspect_IS_document(domain, tag, alt_document_name):
         INFO_inspect_document(globals.IS)
 
 
-def __inspect_TKB_document(domain, tag, alt_document_name):
+#def __inspect_TKB_document(domain, tag, alt_document_name):
     """
     Beräknar url till TKB-dokumentet för angiven domain och tag.
 
@@ -147,7 +159,7 @@ def __inspect_TKB_document(domain, tag, alt_document_name):
 
     Anropar därefter metoden "INFO_inspect_document" som genomför granskning av dokumentet.
     """
-    global TKB_page_link
+    """global TKB_page_link
     global TKB_document_paragraphs
     TKB_page_link = __get_document_page_link(domain, tag, globals.TKB)
     downloaded_TKB_page = __get_downloaded_document(TKB_page_link)
@@ -172,7 +184,7 @@ def __inspect_TKB_document(domain, tag, alt_document_name):
             if paragraph.text.strip() != "":
                 TKB_document_paragraphs += paragraph.text + "<br>"
         ### dev test ###
-        INFO_inspect_document(globals.TKB)
+        INFO_inspect_document(globals.TKB)"""
 
 
 def __inspect_AB_document(domain, tag, alt_document_name):

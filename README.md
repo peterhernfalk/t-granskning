@@ -33,6 +33,7 @@ Det kommer att finnas en restlista med utveckling som inte hinner bli klart. Det
 - experiment.py innehåller påbörjad kod för att ladda ner tjänstedomänens samtliga filer från Bitbucket-repo till ett virtuellt filsystem.
 - Funktionalitet som gärna skulle vara med i tjänsten, men som av tidsbrist inte kommer med. Workaround har påbörjats för att kunna erbjuda detta på annat vis
   - Anrop av verifyRivtaDomain.py är inte med i tjänsten
+  - Anrop av createRivtaArchive.py är inte med i tjänsten
   - Anrop till Apache CXF för Kontroll att tjänstekontraktens XML validerar är inte med i tjänsten
   - Anrop till XML-compatibility.jar är inte med i tjänsten
 
