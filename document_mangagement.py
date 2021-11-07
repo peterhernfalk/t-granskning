@@ -37,8 +37,8 @@ def DOC_get_document_link(domainname, tag, document, head_hash, alt_document_nam
         url_doc = document +"_" + domain_name + ".docx"
     document_link = url_prefix+url_domain+url_raw+head_hash+"/"+url_docs+url_doc
 
-    if document == globals.IS:
-        globals.IS_document_name = url_doc
+    if document == globals.AB:
+        globals.AB_document_name = url_doc
     elif document == globals.TKB:
         globals.TKB_document_name = url_doc
 

@@ -4,9 +4,8 @@ from docx.table import Table
 from docx.oxml.table import CT_Tbl
 from docx.oxml.text.paragraph import CT_P
 from docx.text.paragraph import Paragraph
-import globals
 import granskning_AB
-import granskning_IS
+#import granskning_IS
 import granskning_TKB
 from utilities import *
 
@@ -342,9 +341,7 @@ def __document_table_print_html_table(table):
 
 def DOCX_empty_table_cells_exists(table_number, display_result, display_type):
     result = False
-    if globals.docx_document == globals.IS:
-        granskning_IS.IS_antal_brister_tomma_tabellceller = 0
-    elif globals.docx_document == globals.TKB:
+    if globals.docx_document == globals.TKB:
         granskning_TKB.TKB_antal_brister_tomma_tabellceller = 0
     elif globals.docx_document == globals.AB:
         granskning_AB.AB_antal_brister_tomma_tabellceller = 0
@@ -387,9 +384,7 @@ def DOCX_empty_table_cells_exists(table_number, display_result, display_type):
             if cell_has_contents == False:
                 result = True
                 antal_brister_tomma_tabellceller += 1
-                if globals.docx_document == globals.IS:
-                    table_title = granskning_IS.IS_get_infomodel_classname_from_table_number(table_number, True)
-                elif globals.docx_document == globals.TKB:
+                if globals.docx_document == globals.TKB:
                     table_title = "TKB-tabell nummer " + str(table_number)
                 elif globals.docx_document == globals.AB:
                     table_title = "AB-tabell nummer " + str(table_number)

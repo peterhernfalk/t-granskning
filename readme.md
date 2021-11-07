@@ -47,6 +47,11 @@ Samma struktur som I-granskningstjänsten, vilket underlättar förvaltning och 
   - Läser in GET-parametrar från URL-strängen
  
  Beskriv mer...
+ 
+- experiment.py
+  - Har använts för att utveckla kod som laddar ner samtliga domänfiler till virtuellt filsystem och som använder filerna därifrån
+  - Lösningen är inte färdig än (2021-11-07), och kanske inte hinner bli klar innan överlämning. I så fall får förvaltningen vidareutveckla detta
+  
 ```
 
 ## Driftsättning, konfiguration, beroenden:

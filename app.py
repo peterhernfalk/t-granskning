@@ -2,16 +2,9 @@
 from flask import Flask, request
 from flask_cors import CORS
 import granskning_AB
-import granskning_IS
 import granskning_TKB
 import html_dashboard
-from INFO_inspection_information import *
-import io
 from repo import *
-import requests
-#from docx import Document
-#from html_dashboard import *
-#import globals
 
 ##############################
 # Startup settings
@@ -43,7 +36,7 @@ def emptyrequest():
     html = "<br><h1>Webbadressen är inte korrekt!</h1>"
     html += "<br>Någon av de obligatoriska url-parametrarna <i>domain</i> eller <i>tag</i> <b>saknas i anropet!</b>"
     html += "<br><br>Ange dem i adressraden enligt följande format: <i>url...</i><b>/granskningsinfo?domain=</b><i>[domännamn utan riv-prefix]</i><b>&tag=</b><i>[tag]</i>"
-    html += "<br><br>Exempelvis: <i><a href='https://t-granskning.herokuapp.com/granskningsinfo?domain=clinicalprocess.healthcond.certificate&tag=4.0.5'>https://t-granskning.herokuapp.com/granskningsinfo?domain=clinicalprocess.healthcond.certificate&tag=4.0.5</a></i>"
+    html += "<br><br>Exempel: <i><a href='https://t-granskning.herokuapp.com/granskningsinfo?domain=clinicalprocess.healthcond.certificate&tag=4.0.5'>https://t-granskning.herokuapp.com/granskningsinfo?domain=clinicalprocess.healthcond.certificate&tag=4.0.5</a></i>"
 
     ##### REPLY #####
     return html
@@ -104,10 +97,7 @@ def reponse2request():
         ##### CREATE HTML #####
         html = html_dashboard.get_page_html()
     else:
-        html = "<br><h1>Webbadressen är inte korrekt!</h1>"
-        html += "<br>Någon av de obligatoriska url-parametrarna <i>domain</i> eller <i>tag</i> <b>saknas i anropet!</b>"
-        html += "<br><br>Ange dem i adressraden enligt följande format: <i>url...</i><b>/granskningsinfo?domain=</b><i>[domännamn utan riv-prefix]</i><b>&tag=</b><i>[tag]</i>"
-        #html = emptyrequest()  I-granskning
+        html = emptyrequest()
 
     ##### REPLY #####
     return html
@@ -115,15 +105,15 @@ def reponse2request():
 ##############################
 # Internal methods
 ##############################
-def __inspect_IS_document(domain, tag, alt_document_name):
-    """
+#def __inspect_IS_document(domain, tag, alt_document_name):
+"""
     Beräknar url till infospecdokumentet för angiven domain och tag.
 
     Laddar ner dokumentet till en virtuell fil som läses in i ett docx-Document.
 
     Anropar därefter metoden "INFO_inspect_document" som genomför granskning av dokumentet.
-    """
-    global IS_page_link
+"""
+"""    global IS_page_link
     global IS_document_paragraphs
     IS_page_link = __get_document_page_link(domain, tag, globals.IS)
     downloaded_IS_page = __get_downloaded_document(IS_page_link)
@@ -149,52 +139,53 @@ def __inspect_IS_document(domain, tag, alt_document_name):
                 IS_document_paragraphs += paragraph.text + "<br>"
         ### dev test ###
         INFO_inspect_document(globals.IS)
-
+"""
 
 #def __inspect_TKB_document(domain, tag, alt_document_name):
-    """
+"""
     Beräknar url till TKB-dokumentet för angiven domain och tag.
 
     Laddar ner dokumentet till en virtuell fil som läses in i ett docx-Document.
 
     Anropar därefter metoden "INFO_inspect_document" som genomför granskning av dokumentet.
-    """
-    """global TKB_page_link
-    global TKB_document_paragraphs
-    TKB_page_link = __get_document_page_link(domain, tag, globals.TKB)
-    downloaded_TKB_page = __get_downloaded_document(TKB_page_link)
+"""
+"""    global TKB_page_link
+global TKB_document_paragraphs
+TKB_page_link = __get_document_page_link(domain, tag, globals.TKB)
+downloaded_TKB_page = __get_downloaded_document(TKB_page_link)
 
-    TKB_document_paragraphs = ""
+TKB_document_paragraphs = ""
 
-    TKB_head_hash = __get_head_hash(downloaded_TKB_page)
-    TKB_document_link = __get_document_link(domain, tag, globals.TKB, TKB_head_hash, alt_document_name)
-    downloaded_TKB_document = __get_downloaded_document(TKB_document_link)
-    if downloaded_TKB_document.status_code == 404:
-        ###TKB_document_paragraphs = APP_text_document_not_found(globals.TKB, domain, tag)
-        ###globals.granskningsresultat += "<br><br><h2>TKB</h2>" + APP_text_document_not_found(globals.TKB, domain, tag)
-        docx_TKB_document = ""
-        #globals.TKB_felmeddelande = APP_text_document_not_found(globals.TKB, domain, tag)
-        globals.TKB_exists = False
-    else:
-        globals.docx_TKB_document = __get_docx_document(downloaded_TKB_document)
-        globals.TKB_document_exists = True
-        globals.TKB_exists = True
-        ### dev test ###
-        for paragraph in globals.docx_TKB_document.paragraphs:
-            if paragraph.text.strip() != "":
-                TKB_document_paragraphs += paragraph.text + "<br>"
-        ### dev test ###
-        INFO_inspect_document(globals.TKB)"""
+TKB_head_hash = __get_head_hash(downloaded_TKB_page)
+TKB_document_link = __get_document_link(domain, tag, globals.TKB, TKB_head_hash, alt_document_name)
+downloaded_TKB_document = __get_downloaded_document(TKB_document_link)
+if downloaded_TKB_document.status_code == 404:
+    ###TKB_document_paragraphs = APP_text_document_not_found(globals.TKB, domain, tag)
+    ###globals.granskningsresultat += "<br><br><h2>TKB</h2>" + APP_text_document_not_found(globals.TKB, domain, tag)
+    docx_TKB_document = ""
+    #globals.TKB_felmeddelande = APP_text_document_not_found(globals.TKB, domain, tag)
+    globals.TKB_exists = False
+else:
+    globals.docx_TKB_document = __get_docx_document(downloaded_TKB_document)
+    globals.TKB_document_exists = True
+    globals.TKB_exists = True
+    ### dev test ###
+    for paragraph in globals.docx_TKB_document.paragraphs:
+        if paragraph.text.strip() != "":
+            TKB_document_paragraphs += paragraph.text + "<br>"
+    ### dev test ###
+    INFO_inspect_document(globals.TKB)"""
 
 
-def __inspect_AB_document(domain, tag, alt_document_name):
-    """
+#def __inspect_AB_document(domain, tag, alt_document_name):
+"""
     Beräknar url till AB-dokumentet för angiven domain och tag.
 
     Laddar ner dokumentet till en virtuell fil som läses in i ett docx-Document.
 
     Anropar därefter metoden "INFO_inspect_document" som genomför granskning av dokumentet.
-    """
+"""
+"""
     global AB_page_link
     global AB_document_paragraphs
     AB_page_link = __get_document_page_link(domain, tag, globals.AB)
@@ -217,14 +208,15 @@ def __inspect_AB_document(domain, tag, alt_document_name):
                 AB_document_paragraphs += paragraph.text + "<br>"
         ### dev test ###
         INFO_inspect_document(globals.AB)
+"""
 
-def __get_document_page_link(domainname, tag, document):
-    """
+#def __get_document_page_link(domainname, tag, document):
+"""
     Beräknar url till sidan som innehåller länk till angivet dokument för vald domän och tag i Bitbucket-repot.
 
     Returnerar: länk till dokumentsidan
-    """
-    url_prefix = "https://bitbucket.org/rivta-domains/"
+"""
+"""    url_prefix = "https://bitbucket.org/rivta-domains/"
     url_domain = globals.domain_prefix + domainname + "/"
     url_src = "src/"
     url_tag = tag + "/"
@@ -234,6 +226,7 @@ def __get_document_page_link(domainname, tag, document):
     document_page_link = url_prefix+url_domain+url_src+url_tag+url_docs+url_doc
 
     return document_page_link
+"""
 
 """def __get_domain_docs_link(domainname, tag):
     #
@@ -250,13 +243,13 @@ def __get_document_page_link(domainname, tag, document):
 
     return document_page_link"""
 
-def __get_document_link(domainname, tag, document, head_hash, alt_document_name):
-    """
+#def __get_document_link(domainname, tag, document, head_hash, alt_document_name):
+"""
     Beräknar url till angivet dokument för vald domän och tag i Bitbucket-repot.
 
     Returnerar: länk som kan användas vid nerladdning av angivet dokument
-    """
-    url_prefix = "https://bitbucket.org/rivta-domains/"
+"""
+"""    url_prefix = "https://bitbucket.org/rivta-domains/"
     url_domain = globals.domain_prefix + domainname + "/"
     url_raw = "raw/"
     url_docs = "docs/"
@@ -273,54 +266,56 @@ def __get_document_link(domainname, tag, document, head_hash, alt_document_name)
         globals.TKB_document_name = url_doc
 
     return document_link
+"""
 
-def __get_downloaded_document(document_link):
-    """
+#def __get_downloaded_document(document_link):
+"""
     Laddar ner dokument från angiven länk.
 
     Returnerar: nerladdat dokument
-    """
-    downloaded_doc = requests.get(document_link, stream=True)
-
-    return downloaded_doc
+"""
+    #downloaded_doc = requests.get(document_link, stream=True)
+    #return downloaded_doc
 
 """def __get_document_in_docx_format(document):
     docx_document = document.content
 
     return docx_document"""
 
-def __get_head_hash(document_page):
-    """
+#def __get_head_hash(document_page):
+"""
     hämtar head-hash för det dokument som ska laddas ner. Hashen finns i den Bitbucketsida som innehåller länk till dokumentet.
 
     Returnerar: head-hash
-    """
-    hash_start = document_page.text.find('{"hash":')
+"""
+"""    hash_start = document_page.text.find('{"hash":')
     hash_end = hash_start+17
     head_hash = document_page.text[hash_start+10:hash_end]
     globals.head_hash = head_hash
 
     return head_hash
+"""
 
-def __get_docx_document(downloaded_document):
-    """
+#def __get_docx_document(downloaded_document):
+"""
     Läser in angivet dokuments innehåll i ett docx-Document.
 
     Returnerar: docx-Documentet
-    """
+"""
+"""
     with io.BytesIO(downloaded_document.content) as inmemoryfile:
         docx_document = Document(inmemoryfile)
 
     return docx_document
+"""
 
 #def APP_text_document_not_found(doc, domain, tag):
-
-    """
+"""
     Sammanställer ett meddelande till användaren då sökt dokument saknas eller då fel dokumentnamn har angivits.
 
     Returnerar: information i html-format
-    """
-    """document_name = "Infospec"
+"""
+"""document_name = "Infospec"
     if doc == globals.TKB:
         document_name = globals.TKB
 
@@ -337,19 +332,19 @@ def __get_docx_document(downloaded_document):
 
 
 #def __get_html_response(riv_domain, IS_page_link, TKB_page_link, IS_document_paragraphs, TKB_document_paragraphs):
-    """
+"""
     Sammanställer ett meddelande till användaren med granskningsresultat
 
     Returnerar: information i html-format
-    """
-    """html = '''
+"""
+"""html = '''
         <h1>I-granskningsstöd för: {}</h1>
         <br><h2><a href={}>Infospec-sida</a> &nbsp;&nbsp;&nbsp; <a href={}>TKB-sida</a></h2>
         <br><h2><b>IS-paragrafer:</b></h2> {}
         <br><h2><b>TKB-paragrafer:</b></h2> {}
         '''.format(riv_domain, IS_page_link, TKB_page_link, IS_document_paragraphs, TKB_document_paragraphs)"""
 
-    """html = '''
+"""html = '''
         <h1>I-granskningsstöd för: {}</h1>
         <br>{}
         <br>{}
@@ -357,13 +352,13 @@ def __get_docx_document(downloaded_document):
 
     return html"""
 
-def __get_summary_in_html_format():
-    """
+#def __get_summary_in_html_format():
+"""
     Sammanställer övergripande information om resultatet av granskning av Infospec och TKB.
 
     Returnerar: en sträng med html-innehåll
-    """
-    summary = ""
+"""
+"""    summary = ""
     if globals.IS_exists == False and globals.TKB_exists == False:
         summary = "<h1>Sammanfattning</h1>"
         summary += "<h2>Inga granskningskontroller har utförts på grund av att varken Infospec eller TKB kunnat hittas.</h2><br>"
@@ -391,12 +386,10 @@ def __get_summary_in_html_format():
             else:
                 summary += "<b>Fel versionsnummer</b> angivet i revisionshistoriken"
 
-
     return summary
+"""
 
 if __name__ == '__main__':
-    from argparse import ArgumentParser
-
     port = 4001
     usedHost = 'https://callistabackend.herokuapp.com'
     instance_address = "http://" + usedHost + ":" + str(port)

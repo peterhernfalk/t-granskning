@@ -26,9 +26,9 @@ def get_page_html():
     html += __html_detail_section_begin("TKB")
     #html += __html_recent_inspection_box_begin("Infospec-granskning") + globals.IS_detail_box_contents + __html_recent_inspection_box_end()
 
-    html += __html_detail_box_begin_TKB() + globals.TKB_detail_box_contents + __box_content_end()
+    html += __html_detail_box_begin_TKB() + granskning_TKB.TKB_detail_box_contents + __box_content_end()
 
-    html += __html_br() + __html_detail_box_begin_AB() + globals.AB_detail_box_contents + __box_content_end()
+    html += __html_br() + __html_detail_box_begin_AB() + granskning_AB.AB_detail_box_contents + __box_content_end()
 
     html += __html_br() + __html_detail_box_begin_RIVTA() + globals.RIVTA_detail_box_contents + __box_content_end()
 
