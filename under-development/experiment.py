@@ -1,8 +1,14 @@
 #import os
 import parser
 
+##from lxml import etree
+##from lxml.etree import XMLSchemaParseError, DocumentInvalid
+#from xml import etree
+import xml.etree
+import lxml
 from lxml import etree
 from lxml.etree import XMLSchemaParseError, DocumentInvalid
+
 
 import globals
 import fs

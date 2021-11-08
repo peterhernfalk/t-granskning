@@ -5,7 +5,6 @@ from docx.oxml.table import CT_Tbl
 from docx.oxml.text.paragraph import CT_P
 from docx.text.paragraph import Paragraph
 import granskning_AB
-#import granskning_IS
 import granskning_TKB
 from utilities import *
 
@@ -27,8 +26,6 @@ TITLE = True
 def __style_family(document_search_phrase):
     if "AB_*" in document_search_phrase:
         return STYLE_FAMILY_RUBRIK
-    elif "IS_*" in document_search_phrase:
-        return STYLE_FAMILY_RUBRIK
     else:
         return STYLE_FAMILY_HEADING
 
@@ -37,8 +34,6 @@ def DOCX_prepare_inspection(document_search_phrase):
     """
     Anropar metoder som förbereder granskning av ett Worddokument
     """
-    __set_document_name(document_search_phrase)
-
     __set_document_name(document_search_phrase)
     __document_structure_2_dict(__style_family(document_search_phrase))
 
@@ -60,12 +55,7 @@ def DOCX_inspect_revision_history(docx_document, table_num):
 
     if str(table.cell(i, 0).text) != globals.tag:
         write_detail_box_content("<b>Resultat:</b> Revisionshistoriken behöver uppdateras. (hittade: "+str(table.cell(i, 0).text)+" men förväntade: "+globals.tag+")")
-        if docx_document == globals.IS:
-            antal_brister_revisionshistorik = 1
-        elif docx_document == globals.TKB:
-            antal_brister_revisionshistorik = 1
-        elif docx_document == globals.AB:
-            antal_brister_revisionshistorik = 1
+        antal_brister_revisionshistorik = 1
     else:
         write_detail_box_content("<b>Resultat:</b> Revisionshistoriken är uppdaterad för denna version av domänen")
     write_detail_box_content("Revisionshistorikens sista rad: " + str(text))
@@ -122,7 +112,7 @@ def DOCX_display_paragraph_text_and_tables(searched_paragraph_title, display_par
         if paragraph_displayed == True:
             paragraph_or_table_found = True
     else:
-        for block in __document_block_items(document):      #__iter_block_items(document,searched_paragraph_level)
+        for block in __document_block_items(document):
             if isinstance(block, Paragraph):
                 this_paragraph_title = block.text.strip().lower()
                 if this_paragraph_title == searched_paragraph_title.strip().lower():
@@ -202,12 +192,12 @@ def DOCX_inspect_reference_links(table_num):
     return links_excist, antal_brister_referenslänkar
 
 #def DOCX_display_paragragh_title(searched_title_name):
-    """
+"""
     Söker efter angiven paragraf i lagrad dokumentstruktur. Skriver ut paragrafens titel.
 
     Returnerar: True om sökt paragraf hittades och False om paragrafen inte hittades
-    """
-    """result = True
+"""
+"""result = True
     searched_paragraph_level = DOCX_document_structure_get_exact_levelvalue(searched_title_name)
     if searched_paragraph_level != "":
         #write_output("OK. (" + searched_title_name + ") avsnitt " + searched_paragraph_level + " i TKB")
@@ -224,9 +214,7 @@ def __set_document_name(search_phrase):
     """
     global document
 
-    if "IS_*" in search_phrase:
-        document = globals.docx_IS_document
-    elif "TKB_*" in search_phrase:
+    if "TKB_*" in search_phrase:
         document = globals.docx_TKB_document
     elif "AB_*" in search_phrase:
         document = globals.docx_AB_document
@@ -384,10 +372,11 @@ def DOCX_empty_table_cells_exists(table_number, display_result, display_type):
             if cell_has_contents == False:
                 result = True
                 antal_brister_tomma_tabellceller += 1
-                if globals.docx_document == globals.TKB:
-                    table_title = "TKB-tabell nummer " + str(table_number)
-                elif globals.docx_document == globals.AB:
-                    table_title = "AB-tabell nummer " + str(table_number)
+                table_title = globals.docx_document + "-tabell nummer " + str(table_number)
+                #if globals.docx_document == globals.TKB:
+                #    table_title = "TKB-tabell nummer " + str(table_number)
+                #elif globals.docx_document == globals.AB:
+                #    table_title = "AB-tabell nummer " + str(table_number)
                 if cells_missing_content == "":
                     cells_missing_content += str(cell_number+1)
                 else:
