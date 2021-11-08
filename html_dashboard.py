@@ -1,13 +1,11 @@
 #import app
 #import globals
 import granskning_AB
-#import granskning_IS
 import granskning_TKB
 import repo
 from repo import *
 
 AB_antal_brister = 0
-#IS_antal_brister = 0
 TKB_antal_brister = 0
 
 
@@ -22,9 +20,7 @@ def get_page_html():
     html = __html_start() + __html_head() + __html_body_start() + __html_sidebar() + __html_overview_start(globals.domain_name, globals.tag)
     html += __html_summary_documents() + __html_summary_SCHEMAS() + __html_section_end()
 
-    #html += __html_detail_section_begin("Infospec")
     html += __html_detail_section_begin("TKB")
-    #html += __html_recent_inspection_box_begin("Infospec-granskning") + globals.IS_detail_box_contents + __html_recent_inspection_box_end()
 
     html += __html_detail_box_begin_TKB() + granskning_TKB.TKB_detail_box_contents + __box_content_end()
 
@@ -397,18 +393,7 @@ def __html_summary_documents():
     html = '''
     <ul class="recent-result box">
     <div>
-    <!--div class="box-topic">Sammanfattning: infospec</div-->
     '''
-    """if globals.IS_exists == True:
-        html += '<div><li>' + __get_infospec_summary("revisionshistorik") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("referenslänkar") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("klassbeskrivning") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("multiplicitet") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("datatyper") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("referensinfomodell") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("tabellcellinnehåll") + '</li></div>'
-    else:
-        html += __text_document_not_found(globals.IS, globals.domain_name, globals.tag)"""
 
     html += '''
         <div class="box-topic-large">Dokumentgranskning:</div>
@@ -446,14 +431,6 @@ def __html_summary_SCHEMAS():
     <div class="box-topic-large">Interaktions- och schemafiler:</div>
     '''
 
-    """html = '''
-    <ul class="recent-result box">
-    <div>
-    <div class="box-topic">Sammanfattning: RIVTA-verifiering</div>
-    '''
-    html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
-    html += "<div><li>There were <b>0</b> errors and <b>0</b> warnings.</li></div>"
-    """
     html += '''
         <div class="box-topic">Sammanfattning: RIVTA-verifiering</div>
     '''
@@ -492,40 +469,12 @@ def __html_summary_SCHEMAS():
     '''
     return html
 
-def __html_summary_infospec():
-    html = '''
-    <ul class="recent-result box">
-    <div>
-    <div class="box-topic">Sammanfattning: infospec</div>
-    '''
-    if globals.IS_exists == True:
-        html += '<div><li>' + __get_infospec_summary("revisionshistorik") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("referenslänkar") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("klassbeskrivning") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("multiplicitet") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("datatyper") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("referensinfomodell") + '</li></div>'
-        html += '<div><li>' + __get_infospec_summary("tabellcellinnehåll") + '</li></div>'
-    else:
-        # html = globals.IS_felmeddelande
-        # html += "<br><i><b>Infospec saknas.</b> <br>Här ska det kompletteras med information som kan underlätta för granskaren.</i>"
-        html += __text_document_not_found(globals.IS, globals.domain_name, globals.tag)
-    html += '''
-    </div>
-    </ul>
-    '''
-    return html
-
-
 def __text_document_not_found(doc, domain, tag):
     """
     Sammanställer ett meddelande till användaren då sökt dokument saknas eller då fel dokumentnamn har angivits.
 
     Returenar: information i html-format
     """
-    #document_name = "Infospec"
-    #if doc == globals.TKB:
-    #    document_name = globals.TKB
     document_name = doc
 
     document_info = globals.HTML_2_SPACES
@@ -539,30 +488,6 @@ def __text_document_not_found(doc, domain, tag):
         document_info += "<br>" + globals.HTML_2_SPACES + "Om detta är en applikationsspecifik domän kan du ange det i en url-parameter: <br>" + globals.HTML_2_SPACES + globals.HTML_2_SPACES + "<i>url...</i><b>&domainprefix=true</b>"
 
     return document_info
-
-
-def __get_infospec_summary(topic):
-    html = ""
-    if topic == "revisionshistorik":
-        if globals.IS_antal_brister_revisionshistorik == 0:
-            html += "Revisionshistoriken är <b>korrekt</b>"
-        else:
-            html += "<b>Fel versionsnummer</b> angivet i revisionshistoriken"
-    elif topic == "referenslänkar":
-        html += "<b>" + str(globals.IS_antal_brister_referenslänkar) + " &nbsp</b>felaktiga länkar i referenstabellen"
-    elif topic == "klassbeskrivning":
-        html += "<b>" + str(globals.IS_antal_brister_klassbeskrivning) + " &nbsp</b>saknade klassbeskrivningar"
-    elif topic == "multiplicitet":
-        html += "<b>" + str(
-            globals.IS_antal_brister_multiplicitet) + " &nbsp</b>saknade multipliciteter i klasstabeller"
-    elif topic == "datatyper":
-        html += "<b>" + str(globals.IS_antal_brister_datatyper) + " &nbsp</b>odefinierade datatyper"
-    elif topic == "referensinfomodell":
-        html += "<b>" + str(
-            globals.IS_antal_brister_referensinfomodell) + " &nbsp</b>saknade referenser till RIM i klasstabeller"
-    elif topic == "tabellcellinnehåll":
-        html += "<b>" + str(globals.IS_antal_brister_tomma_tabellceller) + " &nbsp</b>tomma celler i klasstabeller"
-    return html
 
 
 def __html_summary_TKB():
@@ -592,14 +517,6 @@ def __html_summary_TKB():
 
 
 def __get_TKB_summary():
-    """html = ""
-    if globals.TKB_antal_brister_revisionshistorik == 0:
-        html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
-    else:
-        html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
-    html += "<div><li><b>" + str(
-        globals.TKB_antal_brister_referenslänkar) + " &nbsp</b>felaktiga länkar i referenstabellen</li></div>"
-    """
     global TKB_antal_brister
     html = ""
     if granskning_TKB.TKB_antal_brister_revisionshistorik == 0:
@@ -651,18 +568,6 @@ def __html_summary_AB():
 
 
 def __get_AB_summary():
-    """html = ""
-    #html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
-    if globals.AB_antal_brister_revisionshistorik == 0:
-        html += "<div><li>Revisionshistoriken är <b>korrekt</b></li></div>"
-    else:
-        html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
-
-    if globals.AB_antal_arkitekturbeslut > 1:
-        html += "<div><li>Arkitekturbeslut <b>finns</b></li></div>"
-    else:
-        html += "<div><li>Arkitekturbeslut <b>behöver kollas</b> (saknas eller har fel format)</li></div>"
-    """
     global AB_antal_brister
     html = ""
     if granskning_AB.AB_antal_brister_revisionshistorik == 0:
@@ -673,7 +578,6 @@ def __get_AB_summary():
     html += "<div><li><b>" + str(granskning_AB.AB_antal_brister_tomma_revisionshistoriktabellceller) + " &nbsp;</b>tomma celler i revisionshistoriken</li></div>"
     AB_antal_brister += granskning_AB.AB_antal_brister_tomma_revisionshistoriktabellceller
 
-    #html += "<br>"
     html += "<div><li><b>" + str(granskning_AB.AB_antal_brister_referenslänkar) + " &nbsp;</b>felaktiga länkar i referenstabellen</li></div>"
     AB_antal_brister += granskning_AB.AB_antal_brister_referenslänkar
 
@@ -808,71 +712,6 @@ def __html_detail_box_begin_COMMENTS():
     <ul class="details">
     '''
     return html
-
-
-"""def __demo_add_box_content_IS():
-    html = '''
-      <li><b>Krav:</b> om dokumentegenskaper finns ska version och ändringsdatum stämma överens med granskad version</li>
-      <br>
-      <li><b>Krav:</b> revisionshistoriken ska vara uppdaterad för samma version som domänen</li>
-      <li><b>Granskningsstöd:</b> om revisionshistoriken inte är uppdaterad, kontakta beställaren eller skriv en granskningskommentar</li>
-      <li><b>Resultat:</b> Revisionshistoriken är uppdaterad för denna version av domänen</li>
-      <li>Revisionshistorikens sista rad: ('4.0.5', '2020-01-17', 'Peter Hernfalk', 'Ändrat versionsnummer till 4.0.5')</li>
-      <br>
-      <li><b>Krav:</b> länkarna i referenstabellen ska fungera</li>
-      <li><b>OK</b> (statuskod: 301) för: <a href="http://rivta.se/" target="_blank"">http://rivta.se/</a></li>
-      <li><b>OK</b> (statuskod: 302) för: http://informationsstruktur.socialstyrelsen.se/</li>
-      <li><b>OK</b> (statuskod: 200) för: https://inera.atlassian.net/wiki/spaces/KINT/pages/3615655/Kodverk+i+nationella+tj+nstekontrakt</li>
-      <li><b>OK</b> (statuskod: 301) för: http://termbank.socialstyrelsen.se/</li>
-      <li><b>OK</b> (statuskod: 302) för: http://www.rivta.se/domains/clinicalprocess_healthcond_certificate.html</li>
-      <li><b>OK</b> (statuskod: 200) för: https://inera.atlassian.net/wiki/spaces/EIT/overview</li>
-      <li><b>OK</b> (statuskod: 307) för: http://www.rikstermbanken.se/mainMenu.html</li>
-      <li><b>OK</b> (statuskod: 200) för: https://www.sis.se/produkter/informationsteknik-kontorsutrustning/ittillampningar/halso-och-sjukvardsinformatik/sseniso139402016/</li>
-      <li><b>OK</b> (statuskod: 200) för: https://www.sis.se/produkter/informationsteknik-kontorsutrustning/ittillampningar/halso-och-sjukvardsinformatik/sseniso210902011/</li>
-      <br>
-      <li><b>Krav:</b> infomodellklasserna ska komma i alfabetisk ordning </li>
-      <li><b>Krav:</b> infomodellklassernas rubriker ska börja med stor bokstav </li>
-      <li><b>Kontroll</b> att infomodellklassernas rubriker är i alfabetisk ordning och börjar med stor bokstav </li>
-      <li>&nbsp&nbsp 8 Klasser och attribut </li>
-      <li>&nbsp&nbsp 8.1 Avsändare av meddelande </li>
-      <li>&nbsp&nbsp 8.2 Delfråga </li>
-      <li>&nbsp&nbsp 8.3 Delsvar </li>
-      <li>&nbsp&nbsp 8.4 Enhet: Organisation </li>
-      <li>&nbsp&nbsp 8.5 Fråga </li>
-      <li>&nbsp&nbsp 8.6 HoS-personal: Hälso och sjukvårdspersonal </li>
-      <li>&nbsp&nbsp 8.7 Händelse </li>
-      <li>&nbsp&nbsp 8.8 Intygsmottagare: Organisation </li>
-      <li>&nbsp&nbsp 8.9 Intyg: Dokument (inom hälso- och sjukvård) </li>
-      <li>&nbsp&nbsp 8.10 Kompletteringsfråga </li>
-      <li>&nbsp&nbsp 8.11 Makulering </li>
-      <li>&nbsp&nbsp 8.12 Meddelande </li>
-      <li>&nbsp&nbsp 8.13 Metadata </li>
-      <li>&nbsp&nbsp 8.14 Mottagare av meddelande </li>
-      <li>&nbsp&nbsp 8.15 Part </li>
-      <li>&nbsp&nbsp 8.16 Patient: Person </li>
-      <li>&nbsp&nbsp 8.17 Referens </li>
-      <li>&nbsp&nbsp 8.18 Relation </li>
-      <li>&nbsp&nbsp 8.19 Sjukfall </li>
-      <li>&nbsp&nbsp 8.20 Status </li>
-      <li>&nbsp&nbsp 8.21 Svar </li>
-      <li>&nbsp&nbsp 8.22 Vårdgivare: Organisation </li>
-      <li>&nbsp&nbsp 8.23 Ärenden </li>
-      <li><b>Resultat: </b>för närvarande sker kontrollen manuellt, med ovanstående listning som underlag </li>
-    '''
-    return html"""
-
-"""def __demo_add_box_content_TKB():
-    html = '''
-        <li><b>Krav:</b> om dokumentegenskaper finns ska version och ändringsdatum stämma överens med granskad version</li>
-        <br>
-        <li><b>Krav:</b> revisionshistoriken ska vara uppdaterad för samma version som domänen</li>
-        <li><b>Resultat:</b> Revisionshistoriken är uppdaterad för denna version av domänen</li>
-        <li>Revisionshistorikens sista rad: ('4.0.5', '', '2020-01-17', 'Uppdaterat versionsnummer till 4.0.5
-        <br>Lagt till attributet hanteratAv i den gemensamma
-        klassen Handelse.
-        <br>Uppdaterat versionsnummer för ListCertificatesForCareWithQA till 3.3 eftersom den ska använda det nya Händelsefältet. \nUppdaterat tabell för kompatibilitet.', 'Peter Hernfalk', '')</li>
-    '''
-    return html"""
 
 
 def __box_content_end():
