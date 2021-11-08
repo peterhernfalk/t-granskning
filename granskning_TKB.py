@@ -126,6 +126,39 @@ def perform_TKB_inspection(domain, tag, alt_document_name):
     if TKB_exists == False:
         return
 
+    """   Kopia på granskningskod från T-granskningsscriptet
+    ========================================================
+    write_output("\n\n-----------------------------------")
+    write_output("--- Kontrollerar TKB-dokumentet ---")
+    write_output("-----------------------------------")
+    write_output("Krav: ResultCode ska inte förekomma i läsande tjänster (kollas av RIVTA:s verifieringsscript)")
+    write_output("Krav: för uppdaterande tjänster som kan returnera returkoder ska det finnas beskrivning av hur ResultCode ska hanteras")
+    write_output("Krav: om dokumentegenskaper finns ska version och ändringsdatum stämma överens med granskad version")
+    write_output("Granskningsstöd: alla interaktionser ska vara beskrivna i TKB")
+    write_output("----------------------------------------------------------------------------------------------------------------------")
+    globals.document_path = globals.domain_folder_name+"/docs/"
+    DOCX_prepare_inspection("TKB_*.doc*")
+
+    write_output("\n----------------------------------------------------------------------------------")
+    write_output("Krav: alla interaktioner ska vara beskrivna i TKB")
+    #write_output("Krav: alla interaktioner ska vara beskrivna i TKB med rätt versionsnr")
+    write_output("Granskningsstöd: kolla att kapitelnummren hör till tjänstekontraktsavsnittet i TKB")
+    write_output("----------------------------------------------------------------------------------")
+    globals.interactions = globals.localGitRepo + "/" + globals.domain + "/schemas/interactions"
+    globals.interaction_folders = [ f.path for f in os.scandir(globals.interactions) if f.is_dir() ]
+    for interaction in sorted(globals.interaction_folders):
+        interaction_name = os.path.split(interaction)[1].replace("Interaction","")
+        schema_interaction_version = __get_schema_interaction_version(interaction, interaction_name)
+        TK_in_TKB, result_description = TKB_display_paragragh_title(interaction_name)
+        if TK_in_TKB == True:
+            TKB_interaction_version = TKB_get_interaction_version(interaction_name)
+            write_output(result_description + "\t(schema: " + schema_interaction_version + ")")
+            #write_output("\tSchema: " + schema_interaction_version + " TKB: " + TKB_interaction_version)
+            if TKB_interaction_version != schema_interaction_version:
+                write_output("\t" + interaction_name + ":  Fel version angiven i TKB! Version '" + TKB_interaction_version + "' istället för '" + schema_interaction_version + "' i schemafilerna")
+        else:
+            write_output(result_description + "\t(schema: " + schema_interaction_version + ")")
+    """
 
     #write_detail_box_content("<br>")
     #write_detail_box_content("<b>Krav:</b> ResultCode ska inte förekomma i läsande tjänster (kollas av RIVTA:s verifieringsscript)")
@@ -153,10 +186,8 @@ def perform_TKB_inspection(domain, tag, alt_document_name):
     utilities.write_detail_box_content("<br>")
     utilities.write_detail_box_content("<b>Krav:</b> revisionshistorikens alla tabellceller ska ha innehåll")
     if used_table_no > 0:
-        #result, TKB_antal_brister_tomma_revisionshistoriktabellceller = DOCX_display_document_contents.DOCX_empty_table_cells_exists(used_table_no, True, globals.DISPLAY_TYPE_TABLE)
         result, TKB_antal_brister_tomma_revisionshistoriktabellceller = DOCX_display_document_contents.DOCX_empty_table_cells_exists(used_table_no, True, globals.DISPLAY_TYPE_TABLE)
     else:
-        ###result, TKB_antal_brister_tomma_revisionshistoriktabellceller = DOCX_display_document_contents.DOCX_empty_table_cells_exists(TABLE_NUM_REVISION, True, globals.DISPLAY_TYPE_TABLE)
         print("\tTKB: revisionshistorik, tomma celler, avslutad kontroll", datetime.datetime.now().replace(microsecond=0))
         result, TKB_antal_brister_tomma_revisionshistoriktabellceller = DOCX_display_document_contents.DOCX_empty_table_cells_exists(TABLE_NUM_REVISION, True, globals.DISPLAY_TYPE_TABLE)
 
@@ -207,6 +238,30 @@ def perform_TKB_inspection(domain, tag, alt_document_name):
     # 2do (senare): kontrollera att det finns V-MIM-tabeller (en gemensam eller en per tjänstekontrakt)
     # 2do (senare): kontrollera att meddelandemodelltabellens attribut mappar mot motsvarande i xsd-schemas
 
+    utilities.write_detail_box_content("<br>")
+    utilities.write_detail_box_content("<b>Krav:</b> adressering ska vara beskriven och korrekt")
+    DOCX_display_document_contents.DOCX_display_paragraph_text_and_tables("adressering",TITLE,NO_INITIAL_NEWLINE,TEXT,NO_TABLES)
+    utilities.write_detail_box_content("<b>Resultat:</b> för närvarande sker kontrollen manuellt, med ovanstående avsnittsinnehåll som underlag")
+
+    utilities.write_detail_box_content("<br>")
+    utilities.write_detail_box_content("<b>Krav:</b> endast domäner som behöver använda aggregering kan använda systemadressering. Beskrivningen ska vara korrekt")
+    utilities.write_detail_box_content("<b>Krav:</b> om EI används ska det vara beskrivet och de domänspecifika EI-elementen ska vara definierade i TKB")
+    utilities.write_detail_box_content("<b>Krav:</b> för domäner som INTE använder patientbunden aggregering ska algoritmen (hur aggregering ska göras) vara beskriven")
+    ### 2do: förbättra koden så att sökt uttryck ingår i titel (inte är exakt lika som titel) ###
+    DOCX_display_document_contents.DOCX_display_paragraph_text_and_tables("aggregering och engagemangsindex",TITLE,NO_INITIAL_NEWLINE,TEXT,NO_TABLES)
+    utilities.write_detail_box_content("<b>Resultat:</b> för närvarande sker kontrollen manuellt, med ovanstående avsnittsinnehåll som underlag")
+
+    utilities.write_detail_box_content("<br>")
+    utilities.write_detail_box_content("<b>Krav:</b> SLA-krav ska vara beskrivna")
+    DOCX_display_document_contents.DOCX_display_paragraph_text_and_tables("sla krav",TITLE,NO_INITIAL_NEWLINE,TEXT,TABLES)
+    utilities.write_detail_box_content("<b>Resultat:</b> för närvarande sker kontrollen manuellt, med ovanstående avsnittsinnehåll som underlag")
+
+    utilities.write_detail_box_content("<br>")
+    utilities.write_detail_box_content("<b>Krav:</b> felhantering ska vara korrekt beskriven")
+    DOCX_display_document_contents.DOCX_display_paragraph_text_and_tables("felhantering",TITLE,NO_INITIAL_NEWLINE,TEXT,NO_TABLES)
+    utilities.write_detail_box_content("<b>Resultat:</b> för närvarande sker kontrollen manuellt, med ovanstående avsnittsinnehåll som underlag")
+
+
 ######################################################
 ##### Privata funktioner (från TKB_inspection.py #####
 ######################################################
@@ -234,7 +289,7 @@ def perform_TKB_inspection(domain, tag, alt_document_name):
         result = False
     return result, result_description"""
 
-def __display_paragraph_text_by_paragraph_level(searched_paragraph_level,display_keylevel_text):
+"""def __display_paragraph_text_by_paragraph_level(searched_paragraph_level,display_keylevel_text):
     global document_paragraph_index_dict
     previous_key = ""
     for key, value in document_paragraph_index_dict.items():
@@ -249,4 +304,4 @@ def __display_paragraph_text_by_paragraph_level(searched_paragraph_level,display
                 else:
                     #write_output(key)
                     write_detail_box_content(key)
-                previous_key = key.strip()[0:key_level_length]
+                previous_key = key.strip()[0:key_level_length]"""

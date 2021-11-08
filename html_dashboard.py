@@ -202,6 +202,10 @@ def __html_style():
       font-size: 20px;
       font-weight: 500;
     }
+    .overview-boxes .box-topic-large{
+      font-size: 30px;
+      font-weight: 500;
+    }
     /* left box */
     .home-content .detail-boxes .recent-inspection{
       width: 97%;
@@ -406,6 +410,9 @@ def __html_summary_documents():
     else:
         html += __text_document_not_found(globals.IS, globals.domain_name, globals.tag)"""
 
+    html += '''
+        <div class="box-topic-large">Dokumentgranskning:</div>
+    '''
 
     html += '''
         <div class="box-topic">Sammanfattning: TKB</div>
@@ -436,11 +443,22 @@ def __html_summary_SCHEMAS():
     html = '''
     <ul class="recent-result box">
     <div>
+    <div class="box-topic-large">Interaktions- och schemafiler:</div>
+    '''
+
+    """html = '''
+    <ul class="recent-result box">
+    <div>
     <div class="box-topic">Sammanfattning: RIVTA-verifiering</div>
     '''
     html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
     html += "<div><li>There were <b>0</b> errors and <b>0</b> warnings.</li></div>"
-
+    """
+    html += '''
+        <div class="box-topic">Sammanfattning: RIVTA-verifiering</div>
+    '''
+    html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
+    html += "<div><li>There were <b>0</b> errors and <b>0</b> warnings.</li></div>"
 
     html += '''
         <br><div class="box-topic">Sammanfattning: XML-validering</div>
@@ -455,10 +473,17 @@ def __html_summary_SCHEMAS():
     html += "<div><li>Denna domänversion är <b>kompatibel</b> med förra domänversionen</li></div>"
 
     html += '''
-        <br><div class="box-topic">Sammanfattning: granskningskommentarer</div>
+        <br><div class="box-topic-large">Konfigurationsstyrning:</div>
+        <div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>
+        <div><li><b>Alla  &nbsp</b>obligatoriska kataloger och filer finns i domänen</div></li>
+    '''
+
+    html += '''
+        <br><div class="box-topic-large">Granskningskommentarer:</div>
         <div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>
         <div><li><b>0  &nbsp</b>förslag till granskningskommentarer</div></li>
     '''
+
 
     html += '''
     </div>

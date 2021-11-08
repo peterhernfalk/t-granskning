@@ -53,12 +53,12 @@ def DOCX_inspect_revision_history(docx_document, table_num):
     for i, row in enumerate(table.rows):
         text = tuple(cell.text for cell in row.cells)
 
+    write_detail_box_content("Revisionshistorikens sista rad: " + str(text))
     if str(table.cell(i, 0).text) != globals.tag:
         write_detail_box_content("<b>Resultat:</b> Revisionshistoriken behöver uppdateras. (hittade: "+str(table.cell(i, 0).text)+" men förväntade: "+globals.tag+")")
         antal_brister_revisionshistorik = 1
     else:
         write_detail_box_content("<b>Resultat:</b> Revisionshistoriken är uppdaterad för denna version av domänen")
-    write_detail_box_content("Revisionshistorikens sista rad: " + str(text))
     #print(document.core_properties.author)
 
     # 2do: kolla om dokumentet har eftersökta custom properties
