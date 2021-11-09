@@ -41,7 +41,7 @@ def DOCX_prepare_inspection(document_search_phrase):
 
 def DOCX_inspect_revision_history(docx_document, table_num):
     """
-    Kollar att dokumentets tabell med revisionshistorik har en rad för aktuell tag.
+    Kollar om dokumentets tabell med revisionshistorik har en rad för aktuell tag.
     """
     table = document.tables[table_num]
     antal_brister_revisionshistorik = 0
@@ -75,7 +75,7 @@ def DOCX_inspect_revision_history(docx_document, table_num):
 
 def DOCX_inspect_revision_history_new(docx_document, table):
     """
-    Kollar att dokumentets tabell med revisionshistorik har en rad för aktuell tag.
+    Kollar om dokumentets tabell med revisionshistorik har en rad för aktuell tag.
     Optimerad för att undvika timeout då revisionshistoriktabellen har (alltför) många rader
     """
     antal_brister_revisionshistorik = 0
@@ -176,10 +176,7 @@ def DOCX_inspect_reference_links(table_num):
     else:
         links_excist = True
     for link in links:
-        begin = datetime.datetime.now()
         status_code = verify_url_exists(link)
-        end = datetime.datetime.now()
-        diff = end-begin
         if status_code == 400:
             write_detail_box_content("<b>Länken är felaktig eller kan inte tolkas!</b> (statuskod: " + str(status_code) + ") för: " + link)
             antal_brister_referenslänkar += 1
@@ -239,6 +236,7 @@ def __document_structure_2_dict(style_family):
         #2do: try other alternatives to make this style work as title
         level_from_style_name = {i for i in range(2)}
     current_levels = [0] * 10
+
     global document_structure_dict  #key = kapitelnamn, value = kapitelnummer
     document_structure_dict = {}
     global document_paragraph_index_dict
@@ -344,7 +342,7 @@ def DOCX_empty_table_cells_exists(table_number, display_result, display_type):
     row_number = 0
     for i,row in enumerate(table.rows):
         row_number += 1
-        column_count = len(table.row_cells(0))
+        #column_count = len(table.row_cells(0))
         cells_missing_content = ""
         cell_contents_html = ""
         table_title = ""
@@ -444,12 +442,6 @@ def DOCX_init_dict_paragraph_title_and_tableno(document):
                 else:
                     paragraph_title_tableno_dict[paragraph_text] = table_index
                 paragraph_text = ""
-
-    ### Stöd vid utveckling och felsökning ###
-    """print("\n"+globals.docx_document+"\t("+globals.domain_name+", "+globals.tag+")")
-    print("paragraph_title_tableno_dict:")
-    for key, value in paragraph_title_tableno_dict.items():
-        print("\t",value,key)"""
 
     return paragraph_title_tableno_dict
 

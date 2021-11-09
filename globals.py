@@ -25,17 +25,6 @@ UPPER_CASE = "UPPER_CASE"
 XML_detail_box_contents = ""
 
 
-### Check if these variables are needed or not ###
-"""TITLE = True
-NO_TITLE = False
-INITIAL_NEWLINE = True
-NO_INITIAL_NEWLINE = False
-TEXT = True
-NO_TEXT = False
-TABLES = True
-NO_TABLES = False"""
-
-
 def GLOBALS_init():
     global alt_document_name
     global COMMENTS_detail_box_contents

@@ -93,12 +93,16 @@ def extract_urls_from_table(document, table_number):
                             if len(relation_id) > 0:
                                 relation_id_key = str(relation_id[0]).replace('r:id=','').replace('"','')
                                 hyperlink = document_relations[relation_id_key]
-                        if globals.docx_document == globals.TKB:
+                            else:
+                                link_in_instrtext = re.findall('HYPERLINK "[\S\s]*?"', xml_str)
+                                link_in_instrtext_str = str(link_in_instrtext[0]).replace('HYPERLINK "', '').replace('"', '')
+                                hyperlink = link_in_instrtext_str
+                        """if globals.docx_document == globals.TKB:
                             if "http" not in hyperlink:
                                 ### Workaround for when complete url is found in <w:instrText instead of in <w:t ###
                                 link_in_instrtext = re.findall('HYPERLINK "[\S\s]*?"', xml_str)
                                 link_in_instrtext_str = str(link_in_instrtext[0]).replace('HYPERLINK "','').replace('"','')
-                                hyperlink = link_in_instrtext_str
+                                hyperlink = link_in_instrtext_str"""
                         links.append(hyperlink)
                 elif paragraph.text.lower().find("http") >= 0:
                     paragraph_links = paragraph.text.split("\n")

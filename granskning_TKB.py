@@ -121,7 +121,6 @@ def perform_TKB_inspection(domain, tag, alt_document_name):
     global TKB_document_name
     global TKB_exists
     global TKB_meddelandemodeller_finns
-    print(TKB_exists)
 
     if TKB_exists == False:
         return
