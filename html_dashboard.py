@@ -378,7 +378,7 @@ def __html_overview_start(domain_name, tag):
     <nav>
       <div class="sidebar-button">
         <i></i>
-        <span class="dashboard">T-granskning av: &nbsp '''
+        <span class="dashboard">T-granskning av: &nbsp; '''
     html += domain_name + ' (' + tag + ')</span>'
     html += '''
     </div>
@@ -434,32 +434,37 @@ def __html_summary_SCHEMAS():
     html += '''
         <div class="box-topic">Sammanfattning: RIVTA-verifiering</div>
     '''
-    html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
-    html += "<div><li>There were <b>0</b> errors and <b>0</b> warnings.</li></div>"
+    html += "<div><li>Detta är <b> inte implementerat</b></li></div>"
+    #html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
+    #html += "<div><li><i>There were <b>0</b> errors and <b>0</b> warnings.</i></li></div>"
 
     html += '''
         <br><div class="box-topic">Sammanfattning: XML-validering</div>
     '''
-    html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
-    html += "<div><li><b>Valid</b> WSDL</li></div>"
+    html += "<div><li>Detta är <b> inte implementerat</b></li></div>"
+    #html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
+    #html += "<div><li><b>Valid</b> WSDL</li></div>"
 
     html += '''
         <br><div class="box-topic">Sammanfattning: versionskompatibilitet</div>
     '''
-    html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
-    html += "<div><li>Denna domänversion är <b>kompatibel</b> med förra domänversionen</li></div>"
+    html += "<div><li>Detta är <b> inte implementerat</b></li></div>"
+    #html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
+    #html += "<div><li>Denna domänversion är <b>kompatibel</b> med förra domänversionen</li></div>"
 
     html += '''
         <br><div class="box-topic-large">Konfigurationsstyrning:</div>
-        <div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>
-        <div><li><b>Alla  &nbsp</b>obligatoriska kataloger och filer finns i domänen</div></li>
     '''
+    html += "<div><li>Detta är <b> inte implementerat</b></li></div>"
+    #html += ""<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>""
+    #html += ""<div><li><b>Alla  &nbsp;</b>obligatoriska kataloger och filer finns i domänen</div></li>""
 
     html += '''
         <br><div class="box-topic-large">Granskningskommentarer:</div>
-        <div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>
-        <div><li><b>0  &nbsp</b>förslag till granskningskommentarer</div></li>
     '''
+    html += "<div><li>Detta är <b> inte implementerat</b></li></div>"
+    #html += "<div><li><i>Exempel på hur det kan se ut när detta är implementerat</i></li></div>"
+    #html += "<div><li><b>0  &nbsp;</b>förslag till granskningskommentarer</div></li>"
 
 
     html += '''
