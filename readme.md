@@ -41,12 +41,12 @@ Tjänsten förbereds för att kunna lämnas över till förvaltning och vidareut
 Det kommer att finnas en restlista med utveckling som inte hinner bli klart. Detta kommer att vara dokumenterat i denna readme-fil.
 
 ### Restlista vid överlämning till förvaltning
-- experiment.py innehåller påbörjad kod för att ladda ner tjänstedomänens samtliga filer från Bitbucket-repo till ett virtuellt filsystem.
 - Funktionalitet som gärna skulle vara med i tjänsten, men som av tidsbrist inte kommer med. Workaround har påbörjats för att kunna erbjuda detta på annat vis
   - Anrop av verifyRivtaDomain.py är inte med i tjänsten
   - Anrop av createRivtaArchive.py är inte med i tjänsten
   - Anrop till Apache CXF för Kontroll att tjänstekontraktens XML validerar är inte med i tjänsten
   - Anrop till XML-compatibility.jar är inte med i tjänsten
+- experiment.py innehåller påbörjad kod för att ladda ner tjänstedomänens samtliga filer från Bitbucket-repo till ett virtuellt filsystem.
 
 ## Målbild för kodstruktur:
 - Samma struktur som I-granskningstjänsten, vilket underlättar förvaltning och utveckling av de bägge tjänsterna
