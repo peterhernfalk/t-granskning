@@ -128,7 +128,7 @@ def DOCX_display_paragraph_text_and_tables(searched_paragraph_title, display_par
                             write_detail_box_content("<br>")
                         __document_table_print_html_table(block)
                         paragraph_or_table_found = True
-                    searched_paragraph_found = False     # Bug: supports only one table per paragraph
+                    searched_paragraph_found = False     # Limitation: supports only one table per paragraph
 
     return paragraph_or_table_found
 
@@ -136,7 +136,7 @@ def DOCX_list_searched_paragraph_titles_wrong_case(searched_paragraph_title, del
     searched_paragraph_level = DOCX_document_structure_get_levelvalue(searched_paragraph_title)
     paragraph_title_list = []
 
-    for block in __document_block_items(document):   # )__iter_block_items(document, searched_paragraph_level)
+    for block in __document_block_items(document):
         if isinstance(block, Paragraph):
             this_paragraph_title = block.text.strip()
             if this_paragraph_title.lower() == searched_paragraph_title.strip().lower():
@@ -188,22 +188,6 @@ def DOCX_inspect_reference_links(table_num):
 
     return links_excist, antal_brister_referenslänkar
 
-#def DOCX_display_paragragh_title(searched_title_name):
-"""
-    Söker efter angiven paragraf i lagrad dokumentstruktur. Skriver ut paragrafens titel.
-
-    Returnerar: True om sökt paragraf hittades och False om paragrafen inte hittades
-"""
-"""result = True
-    searched_paragraph_level = DOCX_document_structure_get_exact_levelvalue(searched_title_name)
-    if searched_paragraph_level != "":
-        #write_output("OK. (" + searched_title_name + ") avsnitt " + searched_paragraph_level + " i TKB")
-        write_output("OK. Dokument-rubrik (" + searched_paragraph_level + "):  \t" + searched_title_name)
-    else:
-        write_output("FEL! " + searched_title_name + " verkar inte vara beskrivet i dokumentet!")
-        result = False
-    return result"""
-
 
 def __set_document_name(search_phrase):
     """
@@ -219,14 +203,13 @@ def __set_document_name(search_phrase):
 
 def __document_structure_2_dict(style_family):
     """
-    Lagrar dokumentet struktur i ett globalt dictionary.
-        Key = rubriktext
-        Value = rubriknivå (exempelvis 2.1)
+    Lagrar dokumentet struktur i ett globalt dictionary (document_structure_dict)
+        Key = rubriktext (exempelvis: nya tjänstekontrakt)
+        Value = rubriknivå (exempelvis: 3.1.2)
 
-    Lagrar även index till dokumentets paragrafer i ett globalt dictionary.
-        Key = rubriknivå (exempelvis 2.1) + " " + rubriktext
-        Value = indexnummer
-
+    Lagrar index till dokumentets paragrafer i ett globalt (dictionary document_paragraph_index_dict)
+        Key = rubriknivå (exempelvis: 2.1 remisshantering)
+        Value = indexnummer (exempelvis 39)
     """
     if style_family == STYLE_FAMILY_HEADING:
         level_from_style_name = {f'Heading {i}': i for i in range(10)}
@@ -237,7 +220,7 @@ def __document_structure_2_dict(style_family):
         level_from_style_name = {i for i in range(2)}
     current_levels = [0] * 10
 
-    global document_structure_dict  #key = kapitelnamn, value = kapitelnummer
+    global document_structure_dict
     document_structure_dict = {}
     global document_paragraph_index_dict
     document_paragraph_index_dict = {}
@@ -260,6 +243,10 @@ def DOCX_document_structure_get_levelvalue(searched_key):
     """
     Söker efter angivet rubrikvärde i dictionaryt med dokumentstruktur.
 
+    document_structure_dict:
+        Key = rubriktext (exempelvis: nya tjänstekontrakt)
+        Value = rubriknivå (exempelvis: 3.1.2)
+
     Returnerar: Om rubrikvärdet hittades så returneras dess nyckel (rubrikens titel), annars returneras NOT_FOUND
     """
     for key, value in document_structure_dict.items():
@@ -271,6 +258,10 @@ def DOCX_document_structure_get_levelvalue(searched_key):
 def __display_paragraph_text_by_paragraph_level(searched_paragraph_level,display_keylevel_text):
     """
     Hämtar paragraftext från dokumentstruktur-dictionaryt med rubriknivå som nyckel, och visar den funna texten
+
+    dictionary document_paragraph_index_dict:
+        Key = rubriknivå (exempelvis: 2.1 remisshantering)
+        Value = indexnummer (exempelvis 39)
     """
     paragraph_displayed = False
     previous_key = ""
@@ -371,10 +362,6 @@ def DOCX_empty_table_cells_exists(table_number, display_result, display_type):
                 result = True
                 antal_brister_tomma_tabellceller += 1
                 table_title = globals.docx_document + "-tabell nummer " + str(table_number)
-                #if globals.docx_document == globals.TKB:
-                #    table_title = "TKB-tabell nummer " + str(table_number)
-                #elif globals.docx_document == globals.AB:
-                #    table_title = "AB-tabell nummer " + str(table_number)
                 if cells_missing_content == "":
                     cells_missing_content += str(cell_number+1)
                 else:

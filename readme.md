@@ -122,6 +122,33 @@ UNDER UTVECKLING, ANVÄNDS EJ
 ## Information riktad till utvecklare:
 Dokumenten som granskas laddas ner till virtuella dokumentinstanser (DOCX Document), vilka i sin tur är de som granskas.
 
+### API-beskrivning:
+- Endpoint: "/" 
+  - Inga inparametrar
+  - Returnerar html som informerar om vilka parametrar som stöds av endpointen "/granskningsinfo"
+- Endpointen "/granskningsinfo"
+  - Obligatoriska inparametrar:
+    - "domain"
+      - Om prefixet "riv." är angivet så används det, annars lägger tjänsten till det i sin logik för att få rätt format på domännamnet 
+      - Exempel på värde: riv.clinicalprocess.healthcond.certificate
+    - "tag"
+      - Exempel på värde: 4.0.5 eller 2.0_RC7
+  - Frivilliga inparametrar som kan kombineras med de obligatoriska parametrarna: 
+    - "ab"
+      - Används när AB-dokumentets namn avviker från standardnamnsättningen 
+      - Exempel på värde: AB_clinicalprocess_healthcond_actoutcome_getLaboratoryOrderOutcome.docx
+    - "tkb"
+      - Används när TKB-dokumentets namn avviker från standardnamnsättningen
+      - Exempel på värde: TKB_clinicalprocess_healthcond_actoutcome_getLaboratoryOrderOutcome.docx
+    - "domainprefix"
+      - Används för att ange att det är en applikationsspecifik domän
+      - Exempel på värde: true
+
+#### Exempel på URL:er från verkliga domäner
+- https://t-granskning.herokuapp.com/granskningsinfo?domain=clinicalprocess.activity.request&tag=1.0.2
+- https://t-granskning.herokuapp.com/granskningsinfo?domain=riv.supportprocess.serviceprovisioning.healthcareoffering&tag=2.0_RC7
+- https://t-granskning.herokuapp.com/granskningsinfo?domain=infrastructure.eservicesupply.patientportal&tag=2.0&domainprefix=true
+
 ### Lokal utveckling och test
 - PyCharm har använts som IDE vid utveckling av tjänsten
 - Lokala tester har gjorts genom att starta app.py från PyCharm och sedan anropa tjänsten via webbläsare med adress http://127.0.0.1:4001/granskningsinfo?domain=[domännamn]&tag=[tagnummer]
