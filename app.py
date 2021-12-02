@@ -41,7 +41,7 @@ def emptyrequest():
     html = "<br><h1>Webbadressen behöver korrigeras!!</h1>"
     html += "<br>Någon av de obligatoriska url-parametrarna <i>domain</i> eller <i>tag</i> <b>saknas i anropet!</b>"
     html += "<br><br>Ange dem i adressraden enligt följande format: <i>url...</i><b>/granskningsinfo?domain=</b><i>[domännamn utan riv-prefix]</i><b>&tag=</b><i>[tag]</i>"
-    html += "<br><br>Om frivilliga inparametrar anges så ska även de föregås av '&=' &nbsp;&nbsp;<b><i>(se exempel nedan)</i></b>"
+    html += "<br><br>Om frivilliga inparametrar anges så ska även de föregås av '&[tag]=' &nbsp;&nbsp;<b><i>(se exempel nedan)</i></b>"
 
     html += "<br><br><br>"
     html += "<h2>Beskrivning av inparametrar:</h2>"
