@@ -525,25 +525,27 @@ def __get_TKB_summary():
     global TKB_antal_brister
     html = ""
     if granskning_TKB.TKB_antal_brister_revisionshistorik == 0:
-        html += "<div><li>Revisionshistoriken har <b>korrekt</b> version angiven</li></div>"
+        html += "<div><li>" + __get_html_checkmark(0) + "Revisionshistoriken har <b>korrekt</b> version angiven</li></div>"
     else:
-        html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
+        html += "<div><li>" + __get_html_checkmark(0) + "<b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
         TKB_antal_brister += 1
-    html += "<div><li><b>" + str(
-        granskning_TKB.TKB_antal_brister_tomma_revisionshistoriktabellceller) + " &nbsp;</b>tomma celler i revisionshistoriken</li></div>"
+    html += "<div><li><b>" + __get_html_checkmark(granskning_TKB.TKB_antal_brister_tomma_revisionshistoriktabellceller) + \
+            str(granskning_TKB.TKB_antal_brister_tomma_revisionshistoriktabellceller) + \
+            " &nbsp;</b>tomma celler i revisionshistoriken</li></div>"
     TKB_antal_brister += granskning_TKB.TKB_antal_brister_tomma_revisionshistoriktabellceller
     html += "<br>"
-    html += "<div><li><b>" + str(
-        granskning_TKB.TKB_antal_brister_referenslänkar) + " &nbsp;</b>felaktiga länkar i referenstabellen</li></div>"
+    html += "<div><li><b>" + __get_html_checkmark(granskning_TKB.TKB_antal_brister_referenslänkar) + \
+            str(granskning_TKB.TKB_antal_brister_referenslänkar) + " &nbsp;</b>felaktiga länkar i referenstabellen</li></div>"
     TKB_antal_brister += granskning_TKB.TKB_antal_brister_referenslänkar
-    html += "<div><li><b>" + str(
-        granskning_TKB.TKB_antal_brister_tomma_referenstabellceller) + " &nbsp;</b>tomma celler i referenstabellen</li></div>"
+    html += "<div><li><b>" + __get_html_checkmark(granskning_TKB.TKB_antal_brister_tomma_referenstabellceller) + \
+            str(granskning_TKB.TKB_antal_brister_tomma_referenstabellceller) + \
+            " &nbsp;</b>tomma celler i referenstabellen</li></div>"
     TKB_antal_brister += granskning_TKB.TKB_antal_brister_tomma_referenstabellceller
     html += "<br>"
     if granskning_TKB.TKB_meddelandemodeller_finns == True:
-        html += "<div><li>Meddelandemodeller <b>finns</b></li></div>"
+        html += "<div><li>" + __get_html_checkmark(0) + "Meddelandemodeller <b>finns</b></li></div>"
     else:
-        html += "<div><li>Meddelandemodeller <b>saknas</b></li></div>"
+        html += "<div><li>" + __get_html_checkmark(1) + "Meddelandemodeller <b>saknas</b></li></div>"
         TKB_antal_brister += 1
     html += "<br>"
     html += "<b>" + str(TKB_antal_brister) + " &nbsp;brister i TKB</b> upptäckta av automatiserad granskning<br>"
@@ -576,21 +578,33 @@ def __get_AB_summary():
     global AB_antal_brister
     html = ""
     if granskning_AB.AB_antal_brister_revisionshistorik == 0:
-        html += "<div><li>Revisionshistoriken har <b>korrekt</b> version angiven</li></div>"
+        html += "<div><li>" + __get_html_checkmark(0) + "Revisionshistoriken har <b>korrekt</b> version angiven</li></div>"
     else:
-        html += "<div><li><b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
+        html += "<div><li>" + __get_html_checkmark(1) + "<b>Fel versionsnummer</b> angivet i revisionshistoriken</li></div>"
         AB_antal_brister += 1
-    html += "<div><li><b>" + str(granskning_AB.AB_antal_brister_tomma_revisionshistoriktabellceller) + " &nbsp;</b>tomma celler i revisionshistoriken</li></div>"
+    html += "<div><li><b>" + __get_html_checkmark(granskning_AB.AB_antal_brister_tomma_revisionshistoriktabellceller) + \
+            str(granskning_AB.AB_antal_brister_tomma_revisionshistoriktabellceller) + \
+            " &nbsp;</b>tomma celler i revisionshistoriken</li></div>"
     AB_antal_brister += granskning_AB.AB_antal_brister_tomma_revisionshistoriktabellceller
 
-    html += "<div><li><b>" + str(granskning_AB.AB_antal_brister_referenslänkar) + " &nbsp;</b>felaktiga länkar i referenstabellen</li></div>"
+    html += "<div><li><b>" + __get_html_checkmark(granskning_AB.AB_antal_brister_referenslänkar) + \
+            str(granskning_AB.AB_antal_brister_referenslänkar) + " &nbsp;</b>felaktiga länkar i referenstabellen</li></div>"
     AB_antal_brister += granskning_AB.AB_antal_brister_referenslänkar
 
-    html += "<div><li><b>" + str(granskning_AB.AB_antal_brister_tomma_referenstabellceller) + " &nbsp;</b>tomma celler i referenstabellen</li></div>"
+    html += "<div><li><b>" + __get_html_checkmark(granskning_AB.AB_antal_brister_tomma_referenstabellceller) + \
+            str(granskning_AB.AB_antal_brister_tomma_referenstabellceller) + \
+            " &nbsp;</b>tomma celler i referenstabellen</li></div>"
     AB_antal_brister += granskning_AB.AB_antal_brister_tomma_referenstabellceller
     html += "<br><b>" + str(AB_antal_brister) + " &nbsp;brister i AB</b> upptäckta av automatiserad granskning<br>"
 
     return html
+
+
+def __get_html_checkmark(error_counter):
+    checkmark = "&#9989; "  # Green check mark
+    if error_counter > 0:
+        checkmark = "&#10060; " # Red cross
+    return checkmark
 
 
 def __html_section_end():
