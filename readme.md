@@ -47,6 +47,7 @@ Det kommer att finnas en restlista med utveckling som inte hinner bli klart. Det
   - Anrop till Apache CXF för Kontroll att tjänstekontraktens XML validerar är inte med i tjänsten
   - Anrop till XML-compatibility.jar är inte med i tjänsten
 - experiment.py innehåller påbörjad kod för att ladda ner tjänstedomänens samtliga filer från Bitbucket-repo till ett virtuellt filsystem.
+- Det finns önskemål om att tjänsten ska kunna startas från en webbsida där domän och version väljs och att den här tjänsten sedan enkelt kan startas. Det skulle förenkla användandet av tjänsten genom att användare inte behöver ange domän och version som url-parametrar
 
 ## Målbild för kodstruktur:
 - Samma struktur som I-granskningstjänsten, vilket underlättar förvaltning och utveckling av de bägge tjänsterna
