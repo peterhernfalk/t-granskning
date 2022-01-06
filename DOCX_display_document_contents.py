@@ -55,7 +55,7 @@ def DOCX_inspect_revision_history(docx_document, table_num):
 
     write_detail_box_content("Revisionshistorikens sista rad: " + str(text))
     if str(table.cell(i, 0).text) != globals.tag:
-        write_detail_box_content("<b>Resultat:</b> Revisionshistoriken behöver uppdateras. (hittade: "+str(table.cell(i, 0).text)+" men förväntade: "+globals.tag+")")
+        write_detail_box_content("&#10060; <b>Resultat:</b> Revisionshistoriken behöver uppdateras. (hittade: "+str(table.cell(i, 0).text)+" men förväntade: "+globals.tag+")")
         antal_brister_revisionshistorik = 1
     else:
         write_detail_box_content("<b>Resultat:</b> Revisionshistoriken är uppdaterad för denna version av domänen")
@@ -84,7 +84,7 @@ def DOCX_inspect_revision_history_new(docx_document, table):
         text = tuple(cell.text for cell in row.cells)
 
     if str(table.cell(i, 0).text) != globals.tag:
-        write_detail_box_content("<b>Resultat:</b> Revisionshistoriken behöver uppdateras. (hittade: "+str(table.cell(i, 0).text)+" men förväntade: "+globals.tag+")")
+        write_detail_box_content("&#10060; <b>Resultat:</b> Revisionshistoriken behöver uppdateras. (hittade: "+str(table.cell(i, 0).text)+" men förväntade: "+globals.tag+")")
         antal_brister_revisionshistorik = 1
     else:
         write_detail_box_content("<b>Resultat:</b> Revisionshistoriken är uppdaterad för denna version av domänen")
@@ -380,7 +380,7 @@ def DOCX_empty_table_cells_exists(table_number, display_result, display_type):
             if display_type == globals.DISPLAY_TYPE_TABLE:
                 html_table += "</table>"
                 write_detail_box_content(html_table)
-            write_detail_box_content("<b>Resultat:</b> det finns granskade tabell(er) med en eller flera celler utan innehåll")
+            write_detail_box_content("&#10060; <b>Resultat:</b> det finns granskade tabell(er) med en eller flera celler utan innehåll")
         else:
             write_detail_box_content("<b>Resultat:</b> alla granskade celler har innehåll")
 
