@@ -200,13 +200,13 @@ def perform_TKB_inspection(domain, tag, alt_document_name):
     else:
         links_excist, TKB_antal_brister_referenslänkar = DOCX_display_document_contents.DOCX_inspect_reference_links(TABLE_NUM_REF)
     if TKB_antal_brister_referenslänkar > 0:
-        utilities.write_detail_box_content("<b>Resultat:</b> en eller flera länkar är felaktiga, eller kan inte tolkas korrekt av granskningsfunktionen.")
+        utilities.write_detail_box_content("&#10060; <b>Resultat:</b> en eller flera länkar är felaktiga, eller kan inte tolkas korrekt av granskningsfunktionen.")
         utilities.write_detail_box_content("<b>Granskningsstöd:</b> gör manuell kontroll i dokumentet av de länkar som rapporteras som felaktiga")
     else:
         if links_excist == True:
             utilities.write_detail_box_content("<b>Resultat:</b> alla kontrollerade länkar fungerar")
         else:
-            utilities.write_detail_box_content("<b>Resultat:</b> inga länkar har kontrollerats")
+            utilities.write_detail_box_content("&#10060; <b>Resultat:</b> inga länkar har kontrollerats")
 
     utilities.write_detail_box_content("<br>")
     utilities.write_detail_box_content("<b>Krav:</b> referenstabellens alla tabellceller ska ha innehåll")
@@ -230,7 +230,7 @@ def perform_TKB_inspection(domain, tag, alt_document_name):
     utilities.write_detail_box_content("<b>Krav:</b> TKB ska innehålla ett avsnitt för meddelandemodeller")
     TKB_meddelandemodeller_finns = DOCX_display_document_contents.DOCX_display_paragraph_text_and_tables("Tjänstedomänens meddelandemodeller", TITLE, NO_INITIAL_NEWLINE, NO_TEXT, NO_TABLES)
     if TKB_meddelandemodeller_finns == False:
-        utilities.write_detail_box_content("<b>Granskningsstöd:</b> inget innehåll visas, vilket kan bero på att avsnittsrubriken saknas eller är annan än den förväntade (Tjänstedomänens meddelandemodeller)")
+        utilities.write_detail_box_content("&#10060; <b>Granskningsstöd:</b> inget innehåll visas, vilket kan bero på att avsnittsrubriken saknas eller är annan än den förväntade (Tjänstedomänens meddelandemodeller)")
     utilities.write_detail_box_content("<b>Resultat:</b> för närvarande sker kontrollen manuellt, med ovanstående avsnittsinnehåll som underlag")
     print("TKB-granskning klar",datetime.datetime.now().replace(microsecond=0))
 

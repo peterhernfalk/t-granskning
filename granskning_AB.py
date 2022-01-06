@@ -116,13 +116,13 @@ def perform_AB_inspection(domain, tag, alt_document_name):
     else:
         links_excist, AB_antal_brister_referenslänkar = DOCX_inspect_reference_links(globals.TABLE_NUM_REF)
     if AB_antal_brister_referenslänkar > 0:
-        write_detail_box_content("<b>Resultat:</b> en eller flera länkar är felaktiga, eller kan inte tolkas korrekt av granskningsfunktionen.")
+        write_detail_box_content("&#10060; <b>Resultat:</b> en eller flera länkar är felaktiga, eller kan inte tolkas korrekt av granskningsfunktionen.")
         write_detail_box_content("<b>Granskningsstöd:</b> gör manuell kontroll i dokumentet av de länkar som rapporteras som felaktiga")
     else:
         if links_excist == True:
             write_detail_box_content("<b>Resultat:</b> alla kontrollerade länkar fungerar")
         else:
-            write_detail_box_content("<b>Resultat:</b> inga länkar har kontrollerats")
+            write_detail_box_content("&#10060; <b>Resultat:</b> inga länkar har kontrollerats")
 
     write_detail_box_content("<br>")
     write_detail_box_content("<b>Krav:</b> referenstabellens alla tabellceller ska ha innehåll")

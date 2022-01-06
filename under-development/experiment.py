@@ -1,26 +1,20 @@
-#import os
-import parser
-
-##from lxml import etree
-##from lxml.etree import XMLSchemaParseError, DocumentInvalid
-#from xml import etree
-import xml.etree
-import lxml
-from lxml import etree
-from lxml.etree import XMLSchemaParseError, DocumentInvalid
-
-
-import globals
-import fs
-import requests
-from fs.memoryfs import MemoryFS
-from fs.subfs import SubFS
 from docx import Document
+import fs
+from fs.memoryfs import MemoryFS
+from fs import open_fs
+from fs.subfs import SubFS
+import globals
 import io
 import json
-from fs import open_fs
+from lxml import etree
+from lxml.etree import XMLSchemaParseError, DocumentInvalid
+import requests
 
-#from fs import open_fs
+import lxml
+#import os
+import parser
+import xml.etree
+
 # https://stackoverflow.com/questions/51508179/how-to-construct-an-in-memory-virtual-file-system-and-then-write-this-structure
 # https://readthedocs.org/projects/pyfilesystem2/downloads/pdf/latest/
 
@@ -33,7 +27,6 @@ FOLDER_CORE_COMPONENTS = "/schemas/core_components"
 FOLDER_INTERACTIONS = "/schemas/interactions"
 FOLDER_TEST_SUITE = "/test_suite"
 
-#global dir
 used_domain_name = ""
 used_tag = ""
 
@@ -746,11 +739,11 @@ if local_test == True:
     """
 
     __build_and_load_inmemory_filesystem(current_domain, current_tag)
+
     global dir
     global dir_complete
     #__validate_files_in_filesys(current_domain, dir, "dir")
     __validate_files_in_filesys(current_domain, dir_complete, "dir_complete")
-
     #__wsdlvalidation()
     #__test_inspection_comments(globals.TKB,"REF-LINKS",404)
 
