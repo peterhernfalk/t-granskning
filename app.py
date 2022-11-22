@@ -5,6 +5,7 @@ import granskning_AB
 import granskning_TKB
 import html_dashboard
 from repo import *
+from collections.abc import Sequence
 
 ##############################
 # Startup settings
