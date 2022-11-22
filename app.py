@@ -1,3 +1,4 @@
+import collections
 
 from flask import Flask, request
 from flask_cors import CORS
@@ -5,7 +6,16 @@ import granskning_AB
 import granskning_TKB
 import html_dashboard
 from repo import *
+
 from collections.abc import Sequence
+# 👇️ add attributes to `collections` module
+# before you import the package that causes the issue
+collections.Sequence = collections.abc.Sequence
+collections.Mapping = collections.abc.Mapping
+collections.MutableMapping = collections.abc.MutableMapping
+collections.Iterable = collections.abc.Iterable
+collections.MutableSet = collections.abc.MutableSet
+collections.Callable = collections.abc.Callable
 
 ##############################
 # Startup settings
